@@ -58,6 +58,7 @@ The following sections cover the process that should (Or may) be followed when p
    * Once you have connected, try running the ```HELP``` command, this will give us some information regarding the available commands the server processes and the arguments they take. This provides us a starting point for our [*fuzzing*](https://owasp.org/www-community/Fuzzing) work.
    * Exit with ```CTL+]```
    * An example is shown below
+
 		![Alt text](Images/Telnet.png)
 
 ### Dynamic Analysis 
@@ -318,7 +319,11 @@ void Function3(char *Input) {
 
 ## References
 [1] https://stanford-cs242.github.io/f18/lectures/05-1-rust-memory-safety.html
+
 [2] https://stackoverflow.com/questions/17601949/building-a-shared-library-using-gcc-on-linux-and-mingw-on-windows
+
 [3] https://caiorss.github.io/C-Cpp-Notes/compiler-flags-options.html
+
 [4] https://thegreycorner.com/2010/12/25/introduction-to-fuzzing-using-spike-to.html
+
 [5] https://samsclass.info/127/proj/p18-spike.htm
