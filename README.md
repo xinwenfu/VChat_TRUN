@@ -278,7 +278,7 @@ Denial of Service (DoS) attacks, that is what we have been doing before this poi
 In the function ```DWORD WINAPI ConnectionHandler(LPVOID CSocket)``` which is called for **all** connections made the the **VChat** process. The message sent from a user (e.g. attacker) is put into a local buffer *RecvBuf*. The following code snippet from the ```ConnectionHandler``` copies 3000 bytes of the *RecvBuf* into another buffer *KnocBuf*. This new buffer *KnocBuf* is then passed to the function ```void Function3(char* Input)```. Below is the code snippet from the function ```DWORD WINAPI ConnectionHandler(LPVOID CSocket)``` in the VChat source code. 
 ```c
 	// Copy 3000 bytes (1 char = 1 byte) into the KnockBuf 
-    strncpy(KnocBuf, RecvBuf, 3000);
+	strncpy(KnocBuf, RecvBuf, 3000);
 	// Call Function3 with KnockBuf as an argument				
 	Function3(KnocBuf);
 ```
