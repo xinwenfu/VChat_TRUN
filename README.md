@@ -172,7 +172,7 @@ SPIKE is a C based fuzzing tool that is commonly used by professionals, it is av
 
 	<img src="Images/I10.png" width=600>
 
-4. The next thing that is done, is to modify the explit program to reflect the file [exploit2.py](./SourceCode/exploit2.py)
+4. The next thing that is done, is to modify the exploit program to reflect the file [exploit2.py](./SourceCode/exploit2.py)
    * We do this to validate that we have the correct offset for the return address!
 
 		<img src="Images/I11.png" width=600>
@@ -214,6 +214,7 @@ SPIKE is a C based fuzzing tool that is commonly used by professionals, it is av
 
 		<img src="Images/I18.png" width=600>
 
+         * Notice that the EIP now points to an essefunc.dll address!
 	4. Once the overflow occurs click the *step into* button highlighted below 
 
 		<img src="Images/I19.png" width=600>
@@ -223,7 +224,7 @@ SPIKE is a C based fuzzing tool that is commonly used by professionals, it is av
 		<img src="Images/I20.png" width=600>
 
 
-Now that we have all the necissary parts for the creation of a exploit we will discuss what we have done so far (the **exploitx.py** files), and how we can now expand our efforts to gain a shell in the target machine. 
+Now that we have all the necessary parts for the creation of a exploit we will discuss what we have done so far (the **exploit.py** files), and how we can now expand our efforts to gain a shell in the target machine. 
 ### Exploitations
 
 Denial of Service (DoS) attacks, that is what we have been doing before this point in time. Since we simply overflowed the stack with what amounts to garbage address values (A series of `A`s, `B`s and `C`s) all we have done is crash the server. Now, we have all the information necessary to control the flow of VChat's execution, allowing us to inject [Shellcode](https://www.sentinelone.com/blog/malicious-input-how-hackers-use-shellcode/).
@@ -275,17 +276,34 @@ Denial of Service (DoS) attacks, that is what we have been doing before this poi
 
 
 ### VChat Code 
-In the function ```DWORD WINAPI ConnectionHandler(LPVOID CSocket)``` which is called for **all** connections made the the **VChat** process. The message sent from a user (e.g. attacker) is put into a local buffer *RecvBuf*. The following code snippet from the ```ConnectionHandler``` copies 3000 bytes of the *RecvBuf* into another buffer *KnocBuf*. This new buffer *KnocBuf* is then passed to the function ```void Function3(char* Input)```. Below is the code snippet from the function ```DWORD WINAPI ConnectionHandler(LPVOID CSocket)``` in the VChat source code. 
-```c
-	// Copy 3000 bytes (1 char = 1 byte) into the KnockBuf 
-	strncpy(KnocBuf, RecvBuf, 3000);
-	// Call Function3 with KnockBuf as an argument				
-	Function3(KnocBuf);
-```
+In the function ```DWORD WINAPI ConnectionHandler(LPVOID CSocket)``` which is called for **all** connections made to  the **VChat** process. A message sent from the user (e.g. attacker) is put into a local buffer *RecvBuf*. The following code snippet from the ```ConnectionHandler``` function that handles the **TRUN** command copies 3000 bytes of the *RecvBuf* into another buffer *TurnBuf* if the command message contains a period. This new buffer *TurnBuf* is then passed to the function ```void Function3(char* Input)```. Below is the code snippet from the function ```DWORD WINAPI ConnectionHandler(LPVOID CSocket)``` in the VChat source code. 
+	```c
+	// Allocate TrunBuf on the heap
+	char* TrunBuf = malloc(3000);
+	// Set TrunBuf to be all 0s 
+	memset(TrunBuf, 0, 3000);
+
+	// Iterate through TRUN command (Exclude "TRUN ")
+	for (i = 5; i < RecvBufLen; i++) {
+		// If there is a period
+		if ((char)RecvBuf[i] == '.') {
+			// Copy 3000 chars of RecvBuf into TrunBuf
+			strncpy(TrunBuf, RecvBuf, 3000);
+			// Enter function 3
+			Function3(TrunBuf);
+			// Stop for loop 
+			break;
+		}
+	}
+	// Zero out TurnBuf's heap memory
+	memset(TrunBuf, 0, 3000);
+	// Respond
+	SendResult = send(Client, "TRUN COMPLETE\n", 14, 0);
+	```
 > This is not where the overflow occurs!
 
 
-In ```Function3(char* Input)```, the C [standard library function](https://man7.org/linux/man-pages/man3/strcpy.3.html) ```strcpy(char* dst, char* src)``` is used to copy the passed parameter *Input* (i.e. KnocBuf) into a local buffer Buffer2S[2000]. Unlike the C++ [standard library function](https://cplusplus.com/reference/cstring/strncpy/) ```strncpy(char*,char*,size_t)``` used in the ```ConnectionHandler(LPVOID CSocket)``` which copies only a specified number of characters to the destination buffer. The ```strcpy(char* dst, char* src)``` function does not preform any **bound checks** when copying data from the **source** to **destination** buffer, it will stop copying once every byte up to and including a **null terminator** (`\0`) from the **source** buffer has been copied contiguously to the **destination** buffer. This means if the **source** contains more characters than the **destination** buffer can hold, ```strcpy(char*,char*)``` will continue to copy them even out of the bounds of the destination object. The location of the **destination** object being allocated on the *stack* (locally defined) or on the *heap* (dynamically defined) does affect the basic overflow exploit; in this case the **destination** is created *locally* on the stack. This object being located on the stack allows us to **overflow** the bounds and **overwrite** the return address which is located on the stack. This allowing us to take control of the program. 
+In ```Function3(char* Input)```, the C [standard library function](https://man7.org/linux/man-pages/man3/strcpy.3.html) ```strcpy(char* dst, char* src)``` is used to copy the passed parameter *Input* (i.e. TurnBuf) into a local buffer Buffer2S[2000]. Unlike the C [standard library function](https://cplusplus.com/reference/cstring/strncpy/) ```strncpy(char*,char*,size_t)``` used in the ```ConnectionHandler(LPVOID CSocket)``` which copies only a specified number of characters to the destination buffer. The ```strcpy(char* dst, char* src)``` function does not preform any **bound checks** when copying data from the **source** to **destination** buffer, it will stop copying once every byte up to and including a **null terminator** (`\0`) from the **source** buffer has been copied contiguously to the **destination** buffer. This means if the **source** contains more characters than the **destination** buffer can hold, ```strcpy(char*,char*)``` will continue to copy them even out of the bounds of the destination object. The location of the **destination** object being allocated on the *stack* (locally defined) or on the *heap* (dynamically defined) does affect the basic overflow exploit; in this case the **destination** is created *locally* on the stack. This object being located on the stack allows us to **overflow** the bounds and **overwrite** the return address which is located on the stack. This allowing us to take control of the program. 
 
 ```cpp
 void Function3(char *Input) {
