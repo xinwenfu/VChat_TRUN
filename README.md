@@ -321,12 +321,12 @@ void Function3(char *Input) {
 - Victim host: Windows 10
 
 ## Test code
-1. [exploit0.py](SourceCode/exploit1.py) : Sends a reproduction of the fuzzed message that crashed the server.
-2. [exploit1.py](SourceCode/exploit1.py) : Sends a cyclic pattern of chars to identify the offset used to modify the memory at the address we need to inject to control EIP.
-3. [exploit2.py](SourceCode/exploit2.py) : Replacing the bytes at the offset discovered by exploit1.py with the address of a different value (`B`) so we can ensure the offset we discovered is correct.
-4. [exploit3.py](SourceCode/exploit3.py) : Replacing the bytes at the offset discovered by exploit1.py with the address of a `jmp esp` instruction. This is used to modify the control flow, and test that our address for `jmp esp` is correct.
-5. [exploit4.py](SourceCode/exploit4.py) : Adding the reverse shell code to the payload (Modifies [exploit3.py](SourceCode/exploit3.py)).
-6. [exploit5.py](SourceCode/exploit5.py) : Adding the reverse shell code to the payload without the last set of  padding, which is really not needed.
+1. [exploit0.py](SourceCode/exploit1.py): Sends a reproduction of the fuzzed message that crashed the server.
+2. [exploit1.py](SourceCode/exploit1.py): Sends a cyclic pattern of chars to identify the offset used to modify the memory at the address we need to inject to control EIP.
+3. [exploit2.py](SourceCode/exploit2.py): Replacing the bytes at the offset discovered by exploit1.py with the address of a different value (`B`) so we can ensure the offset we discovered is correct.
+4. [exploit3.py](SourceCode/exploit3.py): Replacing the bytes at the offset discovered by exploit1.py with the address of a `jmp esp` instruction. This is used to modify the control flow, and test that our address for `jmp esp` is correct.
+5. [exploit4.py](SourceCode/exploit4.py): Adding the reverse shell code to the payload (Modifies [exploit3.py](SourceCode/exploit3.py)).
+6. [exploit5.py](SourceCode/exploit5.py): Adding the reverse shell code to the payload without the last set of  padding, which is really not needed.
 
 ## Notes
 1. If the test setting above is used, the python attacking code works directly with no need of change.
