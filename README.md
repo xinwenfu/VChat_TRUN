@@ -63,7 +63,7 @@ The following sections cover the process that should (Or may) be followed when p
 
 4. **Linux**: We can try a few inputs to the *TRUN* command, and see if we can get any information. Simply type *TRUN* followed by some additional input as shown below
 
-	![Telent](Images/Telnet2.png)
+	![Telnet](Images/Telnet2.png)
 
 	* Now, trying every possible combinations of strings would get quite tiresome, so we can use the technique of *fuzzing* to automate this process as discussed later in the exploitation section.
 ### Dynamic Analysis 
@@ -165,7 +165,7 @@ SPIKE is a C based fuzzing tool that is commonly used by professionals, it is av
 	/usr/share/metasploit-framework/tools/exploit/pattern_create.rb -l 5000
 	```
 	* This will allow us to inject a new return address at that location.
-2. Run the [exploit1.py](./SourceCode/exploit1.py) to inject the cyclic pattern into the Vunlserver program's stack and observe the EIP register. 
+2. Run the [exploit1.py](./SourceCode/exploit1.py) to inject the cyclic pattern into the Vulnserver program's stack and observe the EIP register. 
 
 	<img src="Images/I9.png" width=600>
 
