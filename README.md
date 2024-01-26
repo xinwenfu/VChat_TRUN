@@ -1,4 +1,4 @@
-# VChat TRUN Exploitation:
+# VChat TRUN Exploitation: Traditional Overflow
 
 *Notice*: The following exploit, and its procedures are based on the original [Blog](https://fluidattacks.com/blog/vulnserver-trun/).
 ____
