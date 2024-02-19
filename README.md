@@ -1,5 +1,4 @@
 # VChat TRUN Exploitation: Traditional Overflow
-# VChat TRUN Exploitation: Traditional Overflow
 
 *Notice*: The following exploit, and its procedures are based on the original [Blog](https://fluidattacks.com/blog/vulnserver-trun/).
 ____
@@ -12,7 +11,7 @@ We will be exploiting a customized and modified Vulnerable By Design (VbD) serve
 ## Exploit Process
 The following sections cover the process that should (Or may) be followed when preforming this exploitation on the VChat application. It should be noted, that the [**Dynamic Analysis**](#dynamic-analysis) section makes certain assumption primarily that we have access to the binary that may not be realistic in cases where you exploit remote servers; however the enumeration and exploitation of generic Windows, and Linux servers to get the binary from a remote server falls outside of the scope of this document.
 
-**Notice**: Please setup the Windows and Linux systems as described in [SystemSetup](../SystemSetup/README.md)!
+**Notice**: Please setup the Windows and Linux systems as described in [SystemSetup](../00-SystemSetup/README.md)!
 ### PreExploitation
 1. **Windows**: Setup Vchat
    1. Compile VChat and it's dependencies if they has not already been compiled. This is done with mingw 
