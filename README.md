@@ -14,7 +14,7 @@ We will be exploiting a customized and modified Vulnerable By Design (VbD) serve
 The following sections cover the process that should (Or may) be followed when performing this exploitation on the VChat application. It should be noted that the [**Dynamic Analysis**](#dynamic-analysis) section makes certain assumptions primarily that we have access to the binary that may not be realistic in cases where you exploit remote servers; however, the enumeration and exploitation of generic Windows, and Linux servers to get the binary from a remote server falls outside of the scope of this document.
 
 ### PreExploitation
-1. **Windows**: Setup Vchat.
+1. (Optional) **Windows**: Setup Vchat.
    1. Compile VChat and its dependencies if they have not already been compiled. This is done with mingw.
       1. Create the essfunc object File. 
 		```powershell
@@ -69,6 +69,7 @@ The following sections cover the process that should (Or may) be followed when p
 	![Telnet](Images/Telnet2.png)
 
 	* Now, trying every possible combinations of strings would get quite tiresome, so we can use the technique of *fuzzing* to automate this process as discussed later in the exploitation section.
+ * 
 ### Dynamic Analysis 
 This phase of exploitation is where we launch the target application's binary or script and examine its behavior at runtime based on the input we provide. 
 
@@ -112,12 +113,14 @@ This phase of exploitation is where we launch the target application's binary or
 SPIKE is a C based fuzzing tool that is commonly used by professionals, it is available in [kali linux](https://www.kali.org/tools/spike/) and other [pen-testing platforms](https://www.blackarch.org/fuzzer.html) repositories. We should note that the original reference page appears to have been taken over by a slot machine site at the time of this writing, so you should refer to the [original writeup](http://thegreycorner.com/2010/12/25/introduction-to-fuzzing-using-spike-to.html) of the SPIKE tool by vulnserver's author [Stephen Bradshaw](http://thegreycorner.com/) in addition to [other resources](https://samsclass.info/127/proj/p18-spike.htm) for guidance. The source code is still available on [GitHub](https://github.com/guilhermeferreira/spikepp/) and still maintained on [GitLab](https://gitlab.com/kalilinux/packages/spike).
 
 1. Open a terminal on the **Kali Linux Machine**
-2. Create a file ```TURN.spk``` with your favorite text editor. We will be using a SPIKE script and interpreter rather than writing our own C based fuzzer. We will be using the [mousepad](https://github.com/codebrainz/mousepad) text editor in this walkthrough, though any editor may be used.
+
+3. Create a file ```TURN.spk``` with your favorite text editor. We will be using a SPIKE script and interpreter rather than writing our own C based fuzzer. We will be using the [mousepad](https://github.com/codebrainz/mousepad) text editor in this walkthrough, though any editor may be used.
 	```sh
 	$ mousepad TURN.spk
 	```
-	* If you do not have a GUI environment, an editor like [nano](https://www.nano-editor.org/), [vim](https://www.vim.org/) or [emacs](https://www.gnu.org/software/emacs/) could be used. 
-3. Define the FUZZER's parameters, we are going to be using [SPIKE](https://www.kali.org/tools/spike/) with the ```generic_send_tcp``` interpreter for TCP based fuzzing.  
+	* If you do not have a GUI environment, an editor like [nano](https://www.nano-editor.org/), [vim](https://www.vim.org/) or [emacs](https://www.gnu.org/software/emacs/) could be used.
+
+4. Define the FUZZER's parameters, we are going to be using [SPIKE](https://www.kali.org/tools/spike/) with the ```generic_send_tcp``` interpreter for TCP based fuzzing.  
 		
 	```
 	s_readline();
@@ -127,7 +130,7 @@ SPIKE is a C based fuzzing tool that is commonly used by professionals, it is av
     * ```s_readline();```: Return the line from the server.
     * ```s_string("TRUN ");```: Specifies that we start each message with the *String* **TURN**.
     * ```s_string_variable("*");```: Specifies a String that we will mutate over, we can set it to * to say "any" as we do in this case.
-4. Use the Spike Fuzzer as shown below	
+5. Use the Spike Fuzzer as shown below	
 	```bash
 	$ generic_send_tcp <VChat-IP> <Port> <SPIKE-Script> <SKIPVAR> <SKIPSTR>
 
@@ -139,12 +142,14 @@ SPIKE is a C based fuzzing tool that is commonly used by professionals, it is av
 	* ```<SPIKE-Script>```: Script to run through the interpreter.
 	* ```<SKIPVAR>```: Skip to the n'th **s_string_variable**, 0 -> (S - 1) where S is the number of variable blocks.
 	* ```<SKIPSTR>```: Skip to the n'th element in the array that is **s_string_variable**, they internally are an array of strings used to fuzz the target.
-5. Observe the results of the fuzzing on VChat's terminal output.
+
+6. Observe the results of the fuzzing on VChat's terminal output.
 
 	<img src="Images/I4.png" width=600>
 
 	* Notice that VChat appears to have crashed after our second message! We can see that the SPIKE script continues to run for ~190 more iterations before it fails to connect to the VChat's TCP socket, however this is long after the server started to fail connections.
-6. We can also look at the comparison of the Register values before and after the fuzzing in Immunity Debugger to confirm a crash occurred. 
+
+7. We can also look at the comparison of the Register values before and after the fuzzing in Immunity Debugger to confirm a crash occurred. 
 	* Before:
 
 		<img src="Images/I7.png" width=600>
@@ -154,7 +159,8 @@ SPIKE is a C based fuzzing tool that is commonly used by professionals, it is av
 		<img src="Images/I8.png" width=600>
 
       * The best way to reproduce this is to use [exploit0.py](./SourceCode/exploit0.py).
-7. We can examine the messages SPIKE is sending by examining the [tcpdump](https://www.tcpdump.org/) or [wireshark](https://www.wireshark.org/docs/wsug_html/) output.
+
+8. We can examine the messages SPIKE is sending by examining the [tcpdump](https://www.tcpdump.org/) or [wireshark](https://www.wireshark.org/docs/wsug_html/) output.
 
 	<img src="Images/I5.png" width=800>
 
@@ -168,6 +174,7 @@ SPIKE is a C based fuzzing tool that is commonly used by professionals, it is av
 	$ /usr/share/metasploit-framework/tools/exploit/pattern_create.rb -l 5000
 	```
 	* This will allow us to inject and overwrite a new return address at the location our program reads the original return address from.
+
 2. Modify your exploit code to reflect the [exploit1.py](./SourceCode/exploit1.py) script and run it to inject a cyclic pattern into the Vulnserver program's stack and observe the EIP register. 
 
 	<img src="Images/I9.png" width=600>
@@ -187,12 +194,14 @@ SPIKE is a C based fuzzing tool that is commonly used by professionals, it is av
 
 		* See that the EIP is a series of the value `0x42` this is a series of Bs. This tells us that we can write an address to that location in order to change the control flow of the target program.
 		* *Note:* It took a few runs for this to work and update on Immunity Debugger within the VirtualBox VM.
+
 5. Use the [mona.py](https://github.com/corelan/mona) python program within Immunity Debugger to determine useful information about our target process. While the *cyclic pattern* from [exploit1.py](./SourceCode/exploit1.py) is in memory we can run the command ```!mona findmsp``` in the command line at the bottom of the Immunity Debugger GUI. **Note:** We must have sent the cyclic pattern and it must be present in the stack frame at the time we run this command!
 
 	<img src="Images/I12.png" width=600>
 
       * We can see that the offset (Discovered with [pattern_offset.rb](https://github.com/rapid7/metasploit-framework/blob/master/tools/exploit/pattern_offset.rb) earlier) is at the byte offset of `2003`, the ESP has `984` bytes after jumping to the address in the ESP register, and the EBP is at the byte offset `1999`.
-      * The most important thing we learned is that we have `984` bytes to work with!  
+      * The most important thing we learned is that we have `984` bytes to work with!
+
 6. Open the `Executable Modules` window from the **views** tab in Immunity Debugger. This allows us to see the memory offsets of each dependency VChat uses. This will help inform us as to which `jmp esp` instruction we should pick, since we want to avoid any *Windows dynamic libraries* since their base addresses may vary between executions and Windows systems. 
 
 	<img src="Images/I13.png" width=600>
@@ -209,6 +218,7 @@ SPIKE is a C based fuzzing tool that is commonly used by professionals, it is av
 	<img src="Images/I15.png" width=600>
 
       * We can see there are nine possible `jmp esp` instructions in the *essfunc* dll that we can use, any should work. We will use the last one, `0x6250151e`
+
 8. Modify your exploit program to reflect the [exploit3.py](./SourceCode/exploit3.py) script, we use this to verify that the `jmp esp` address we inject works.
    1. Click on the black button highlighted below, and enter in the address we decided in the previous step.
 
@@ -233,6 +243,7 @@ SPIKE is a C based fuzzing tool that is commonly used by professionals, it is av
 
 
 Now that we have all the necessary parts for the creation of a exploit we will discuss what we have done so far (the **exploit.py** files), and how we can now expand our efforts to gain a shell in the target machine. 
+
 ### Exploitations
 Up until this point in time,  we have been performing [Denial of Service](https://attack.mitre.org/techniques/T0814/) (DoS) attacks. Since we simply overflowed the stack with what is effectively garbage address values (A series of `A`s, `B`s and `C`s) all we have done with our exploits is crash the VChat server. Now, we have all the information necessary to control the flow of VChat's execution, allowing us to inject [Shellcode](https://www.sentinelone.com/blog/malicious-input-how-hackers-use-shellcode/) and perform a more meaningful attack.
 
@@ -261,6 +272,7 @@ Up until this point in time,  we have been performing [Denial of Service](https:
   	* `-l`: Set netcat to listen for connections. 
   	* `v`: Verbose output. 
   	* `p`: Set to listen on a port, in this case, port 8080.
+
 4. Examine Immunity Debugger with a Break Point during Exploit 
    1. As done previously goto the `jmp esp` instruction
 		
