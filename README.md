@@ -200,7 +200,7 @@ SPIKE is a C based fuzzing tool that is commonly used by professionals, it is av
 	<img src="Images/I12.png" width=600>
 
       * We can see that the offset (Discovered with [pattern_offset.rb](https://github.com/rapid7/metasploit-framework/blob/master/tools/exploit/pattern_offset.rb) earlier) is at the byte offset of `2003`, the ESP has `984` bytes after jumping to the address in the ESP register, and the EBP is at the byte offset `1999`.
-      * The most important thing we learned is that we have `984` bytes to work with!
+      * The most important thing we learned is that we have `984` bytes to work with! This is because the malcious message is truncated by VChat
 
 
 4. Now modify the exploit program to reflect the code in the [exploit2.py](./SourceCode/exploit2.py) script and run the exploit against VChat.
