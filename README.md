@@ -74,7 +74,7 @@ We want to understand the VChat. The most important inforamtion is the IP addres
 	![Telnet](Images/Telnet2.png)
 
 	* Now, trying every possible combinations of strings would get quite tiresome, so we can use the technique of *fuzzing* to automate this process as discussed later in the exploitation section.
- * 
+
 ### Dynamic Analysis 
 This phase of exploitation is where we launch the target application's binary or script and examine its behavior at runtime based on the input we provide.
 We want to construct the attack string and find how we cause VChat to crash.
