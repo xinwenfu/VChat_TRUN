@@ -224,18 +224,18 @@ The address of a `jmp esp` instruction will be used to overwrite the return addr
       * The `-o` flag tells *mona.py* to ignore OS modules.
       * We can select any output from this. 
 
-	<img src="Images/I15.png" width=600>
+<img src="Images/I15.png" width=600>
 
       * We can see there are nine possible `jmp esp` instructions in the *essfunc* dll that we can use, any should work. We will use the last one, `0x6250151e`
 
 8. Modify your exploit program to reflect the [exploit3.py](./SourceCode/exploit3.py) script, we use this to verify that the `jmp esp` address we inject works.
    1. Click on the black button highlighted below, and enter in the address we decided in the previous step.
 
-		<img src="Images/I16.png" width=600>
+<img src="Images/I16.png" width=600>
 
    2. Set a breakpoint at the desired address (right-click).
 
-		<img src="Images/I17.png" width=600>
+<img src="Images/I17.png" width=600>
 
    3. Run the [exploit3.py](./SourceCode/exploit3.py) program till an overflow occurs (See EIP/ESP and stack changes and the message at the bottom of the screen).
 
