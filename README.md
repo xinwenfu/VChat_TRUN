@@ -14,6 +14,7 @@ We will be exploiting a customized and modified Vulnerable By Design (VbD) serve
 The following sections cover the process that should (Or may) be followed when performing this exploitation on the VChat application. It should be noted that the [**Dynamic Analysis**](#dynamic-analysis) section makes certain assumptions primarily that we have access to the binary that may not be realistic in cases where you exploit remote servers; however, the enumeration and exploitation of generic Windows, and Linux servers to get the binary from a remote server falls outside of the scope of this document.
 
 ### Information Collecting
+We want to understand the VChat. The most important inforamtion is the IP address of the Windows VM that runs VChat and the port number that VChat runs on. 
 1. (Optional) **Windows**: Setup Vchat.
    1. Compile VChat and its dependencies if they have not already been compiled. This is done with mingw.
       1. Create the essfunc object File. 
@@ -71,7 +72,10 @@ The following sections cover the process that should (Or may) be followed when p
 	* Now, trying every possible combinations of strings would get quite tiresome, so we can use the technique of *fuzzing* to automate this process as discussed later in the exploitation section.
  * 
 ### Dynamic Analysis 
-This phase of exploitation is where we launch the target application's binary or script and examine its behavior at runtime based on the input we provide. 
+This phase of exploitation is where we launch the target application's binary or script and examine its behavior at runtime based on the input we provide.
+We want to construct the attack string and find how we cause VChat to crash.
+We want to construct an attack string as follows: padding-bytes|address-to-overwrite-return-address|shell-code, where | means concatenation.
+Therefore, we want to know how many padding bytes are needed.
 
 #### Launch VChat
 1. Open Immunity Debugger
