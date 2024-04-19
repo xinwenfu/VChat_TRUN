@@ -40,7 +40,7 @@ The following sections cover the process that should (Or may) be followed when p
          * ```-lws2_32 ./libessfunc.a```: Link the executable against the import library "libessfunc.a", enabling it to use the DLL "essfunc.dll".
    2. Launch the VChat application. 
 		* Click on the Icon in File Explorer when it is in the same directory as the essfunc dll.
-2. **Linux**: Run NMap.
+2. (Optional) **Linux**: Run NMap.
 	```sh
 	# Replace the <IP> with the IP of the machine.
 	$ nmap -A <IP>
