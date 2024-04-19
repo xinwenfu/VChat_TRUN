@@ -286,7 +286,7 @@ Up until this point in time,  we have been performing [Denial of Service](https:
 
 Now we cn run VChat directly. Alternatively, we can run VChat in Immunity Debugger and examine a few things. So the follwing steps are optional.
 
-   1. As done previously goto the `jmp esp` instruction
+        1. As done previously goto the `jmp esp` instruction
 		
 		<img src="Images/I21.png" width=600>
 
