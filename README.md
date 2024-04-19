@@ -284,7 +284,7 @@ Up until this point in time,  we have been performing [Denial of Service](https:
 
 4. Run VChat directly or Examine Immunity Debugger with a Break Point during Exploit
 
-Now we cn run VChat directly. Alternatively, we can run VChat in Immunity Debugger and examine a few things.
+Now we cn run VChat directly. Alternatively, we can run VChat in Immunity Debugger and examine a few things. So the follwing steps are optional.
 
    1. As done previously goto the `jmp esp` instruction
 		
