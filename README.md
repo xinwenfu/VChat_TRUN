@@ -179,7 +179,7 @@ SPIKE is a C based fuzzing tool that is commonly used by professionals, it is av
 #### Further Analysis
 1. Generate a Cyclic Pattern. We do this so we can tell *where exactly* the return address is located on the stack. We can use the *Metasploit* program [pattern_create.rb](https://github.com/rapid7/metasploit-framework/blob/master/tools/exploit/pattern_create.rb) to generate this string. By analyzing the values stored in the register which will be a subset of the generated string after a crash, we can tell where in memory the return address is stored. 
 	```bash
-	$ /usr/share/metasploit-framework/tools/exploit/pattern_create.rb -l 5000
+	/usr/share/metasploit-framework/tools/exploit/pattern_create.rb -l 5000
 	```
 	* This will allow us to inject and overwrite a new return address at the location our program reads the original return address from.
 
@@ -189,7 +189,7 @@ SPIKE is a C based fuzzing tool that is commonly used by professionals, it is av
 
 3. Notice that the EIP register reads `386F4337` in this case, we can use the [pattern_offset.rb](https://github.com/rapid7/metasploit-framework/blob/master/tools/exploit/pattern_offset.rb) script to determine the return address's offset based on our search string's position in the pattern we sent to VChat. 
 	```bash
-	$ /usr/share/metasploit-framework/tools/exploit/pattern_offset.rb -q 386F4337
+	/usr/share/metasploit-framework/tools/exploit/pattern_offset.rb -q 386F4337
 	```
 	* This will return an offset as shown below 
 
@@ -280,7 +280,7 @@ Up until this point in time,  we have been performing [Denial of Service](https:
 2. Insert this into your exploit python code as shown in [exploit4.py](./SourceCode/exploit4.py) or [exploit5.py](./SourceCode/exploit5.py). The only difference between the two is that the extra padding at the end of [exploit4.py](./SourceCode/exploit4.py)'s payload `b'C' * (5000 - 2003 - 4 - 32 - len(SHELL))` is not needed.
 3. Launch a [netcat](https://linux.die.net/man/1/nc) listener on our *Kali Linux* machine listening on port 8080, so we can receive the outbound connection from the target. 
 	```sh
-	$ nc -l -v -p 8080
+	nc -l -v -p 8080
 	```
 	* `nc`: The netcat command.
   	* `-l`: Set netcat to listen for connections. 
