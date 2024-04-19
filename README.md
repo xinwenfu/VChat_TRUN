@@ -282,7 +282,10 @@ Up until this point in time,  we have been performing [Denial of Service](https:
   	* `v`: Verbose output. 
   	* `p`: Set to listen on a port, in this case, port 8080.
 
-4. Examine Immunity Debugger with a Break Point during Exploit 
+4. Run VChat directly or Examine Immunity Debugger with a Break Point during Exploit
+
+Now we cn run VChat directly. Alternatively, we can run VChat in Immunity Debugger and examine a few things.
+
    1. As done previously goto the `jmp esp` instruction
 		
 		<img src="Images/I21.png" width=600>
@@ -296,11 +299,11 @@ Up until this point in time,  we have been performing [Denial of Service](https:
 		<img src="Images/I23.png" width=600>
 
 	4. Once you are satisfied we are executing the shell code, click the continue (Red arrow) button to allow it to execute.
-5. Look around in your netcat terminal! You should see a shell like the one shown below. Just note that Windows defender may kill it if you have protections enabled!
+6. Look around in your netcat terminal! You should see a shell like the one shown below. Just note that Windows defender may kill it if you have protections enabled!
 
 	<img src="Images/I24.png" width=600>
 
-6. Once you are done, exit the netcat program with ```Ctl+C``` to signal and kill the process.
+7. Once you are done, exit the netcat program with ```Ctl+C``` to signal and kill the process.
 
 
 ### (Optional) VChat Code 
