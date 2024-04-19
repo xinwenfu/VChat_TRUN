@@ -213,7 +213,7 @@ SPIKE is a C based fuzzing tool that is commonly used by professionals, it is av
 
 7. Use the command `!mona jmp -r esp -cp nonull -o` in the Immunity Debugger's GUI command line to find some `jmp esp` instructions.
 
-The address of a `jmp esp` instruction will be used to overwrite the return address of the victim function so that when the victim funciton returns, `jmp esp` gets running. When `jmp esp` runs, it jumps to the location referred to by esp (stack top), whhere the shellcode is put.
+The address of a `jmp esp` instruction will be used to overwrite the return address of the victim function so that when the victim funciton returns, `jmp esp` gets running. When `jmp esp` runs, it jumps to the location referred to by esp (stack top), whhere the shellcode will be put.
 
 	<img src="Images/I14.png" width=600>
 
