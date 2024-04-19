@@ -217,7 +217,7 @@ SPIKE is a C based fuzzing tool that is commonly used by professionals, it is av
 
 The address of a `jmp esp` instruction will be used to overwrite the return address of the victim function so that when the victim funciton returns, `jmp esp` gets running. When `jmp esp` runs, it jumps to the location referred to by esp (stack top), whhere the shellcode will be put.
 
-      <img src="Images/I14.png" width=600>
+<img src="Images/I14.png" width=600>
 
       * The `-r esp` flag tells *mona.py* to search for the `jmp esp` instruction.
       * The `-cp nonull` flag tells *mona.py* to ignore null values.
