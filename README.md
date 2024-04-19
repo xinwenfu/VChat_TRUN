@@ -294,7 +294,7 @@ Up until this point in time,  we have been performing [Denial of Service](https:
 6. Once you are done, exit the netcat program with ```Ctl+C``` to signal and kill the process.
 
 
-### VChat Code 
+### (Optional) VChat Code 
 In the function ```DWORD WINAPI ConnectionHandler(LPVOID CSocket)``` which is called for **all** connections made to  the **VChat** process. A message sent from the user (e.g. attacker) is put into a local buffer *RecvBuf*. The following code snippet from the ```ConnectionHandler``` function handles the **TRUN** command. This copies 3000 bytes from the *RecvBuf* into another buffer that has been declared *TurnBuf* if the command message contains a period. This new buffer *TurnBuf* is then passed to the function ```void Function3(char* Input)```. 
 
 <!-- Below is a code snippet from the function ```DWORD WINAPI ConnectionHandler(LPVOID CSocket)``` in the VChat source code.  -->
