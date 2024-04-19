@@ -211,13 +211,13 @@ SPIKE is a C based fuzzing tool that is commonly used by professionals, it is av
 
 6. Open the `Executable Modules` window from the **views** tab in Immunity Debugger. This allows us to see the memory offsets of each dependency VChat uses. This will help inform us as to which `jmp esp` instruction we should pick, since we want to avoid any *Windows dynamic libraries* since their base addresses may vary between executions and Windows systems. 
 
-	<img src="Images/I13.png" width=600>
+		<img src="Images/I13.png" width=600>
 
 7. Use the command `!mona jmp -r esp -cp nonull -o` in the Immunity Debugger's GUI command line to find some `jmp esp` instructions.
 
 The address of a `jmp esp` instruction will be used to overwrite the return address of the victim function so that when the victim funciton returns, `jmp esp` gets running. When `jmp esp` runs, it jumps to the location referred to by esp (stack top), whhere the shellcode will be put.
 
-<img src="Images/I14.png" width=600>
+		<img src="Images/I14.png" width=600>
 
       * The `-r esp` flag tells *mona.py* to search for the `jmp esp` instruction.
       * The `-cp nonull` flag tells *mona.py* to ignore null values.
@@ -231,11 +231,11 @@ The address of a `jmp esp` instruction will be used to overwrite the return addr
 8. Modify your exploit program to reflect the [exploit3.py](./SourceCode/exploit3.py) script, we use this to verify that the `jmp esp` address we inject works.
    1. Click on the black button highlighted below, and enter in the address we decided in the previous step.
 
-<img src="Images/I16.png" width=600>
+		<img src="Images/I16.png" width=600>
 
    2. Set a breakpoint at the desired address (right-click).
 
-<img src="Images/I17.png" width=600>
+		<img src="Images/I17.png" width=600>
 
    3. Run the [exploit3.py](./SourceCode/exploit3.py) program till an overflow occurs (See EIP/ESP and stack changes and the message at the bottom of the screen).
 
