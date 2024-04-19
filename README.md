@@ -219,14 +219,14 @@ The address of a `jmp esp` instruction will be used to overwrite the return addr
 
 <img src="Images/I14.png" width=600>
 
-      - The `-r esp` flag tells *mona.py* to search for the `jmp esp` instruction.
-      - The `-cp nonull` flag tells *mona.py* to ignore null values.
-      - The `-o` flag tells *mona.py* to ignore OS modules.
-      - We can select any output from this. 
+- The `-r esp` flag tells *mona.py* to search for the `jmp esp` instruction.
+- The `-cp nonull` flag tells *mona.py* to ignore null values.
+- The `-o` flag tells *mona.py* to ignore OS modules.
+- We can select any output from this. 
 
 <img src="Images/I15.png" width=600>
 
-      - We can see there are nine possible `jmp esp` instructions in the *essfunc* dll that we can use, any should work. We will use the last one, `0x6250151e`
+We can see there are nine possible `jmp esp` instructions in the *essfunc* dll that we can use, any should work. We will use the last one, `0x6250151e`
 
 8. Modify your exploit program to reflect the [exploit3.py](./SourceCode/exploit3.py) script, we use this to verify that the `jmp esp` address we inject works.
    1. Click on the black button highlighted below, and enter in the address we decided in the previous step.
