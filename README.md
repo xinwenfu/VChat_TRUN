@@ -234,24 +234,24 @@ SPIKE is a C based fuzzing tool that is commonly used by professionals, it is av
 8. Modify your exploit program to reflect the [exploit3.py](./SourceCode/exploit3.py) script, we use this to verify that the `jmp esp` address we inject works.
    1. Click on the black button highlighted below, and enter in the address we decided in the previous step.
 
-		<img src="Images/I16.png" width=600>
+		<img src="Images/I16.png" width=800>
 
    2. Set a breakpoint at the desired address (right-click).
 
-		<img src="Images/I17.png" width=600>
+		<img src="Images/I17.png" width=800>
 
    3. Run the [exploit3.py](./SourceCode/exploit3.py) program till an overflow occurs (See EIP/ESP and stack changes and the message at the bottom of the screen).
 
-		<img src="Images/I18.png" width=600>
+		<img src="Images/I18.png" width=800>
 
          * Notice that the EIP now points to an essfunc.dll address!
 	4. Once the overflow occurs, click the *step into* button highlighted below.
 
-		<img src="Images/I19.png" width=600>
+		<img src="Images/I19.png" width=800>
 
 	5. Notice that we jumped to the stack; we just overflowed!
 
-		<img src="Images/I20.png" width=600>
+		<img src="Images/I20.png" width=800>
 
 
 Now that we have all the necessary parts for the creation of a exploit we will discuss what we have done so far (the **exploit.py** files), and how we can now expand our efforts to gain a shell in the target machine. 
@@ -290,20 +290,20 @@ Up until this point in time,  we have been performing [Denial of Service](https:
 Now we cn run VChat directly. Alternatively, we can run VChat in Immunity Debugger and examine a few things. So the follwing steps are optional.
    1. As done previously goto the `jmp esp` instruction
 
-		<img src="Images/I21.png" width=600>
+		<img src="Images/I21.png" width=800>
 
     2. Set a breakpoint and launch the exploit
 
-		<img src="Images/I22.png" width=600>
+		<img src="Images/I22.png" width=800>
 
     3. Click the *Step* function a few times, it may look like we are not doing anything (Depending on your padding), however after some number of steps we should arrive at the shellcode as shown below!
 
-		<img src="Images/I23.png" width=600>
+		<img src="Images/I23.png" width=800>
 
      4. Once you are satisfied we are executing the shell code, click the continue (Red arrow) button to allow it to execute.
 5. Look around in your netcat terminal! You should see a shell like the one shown below. Just note that Windows defender may kill it if you have protections enabled!
 
-	<img src="Images/I24.png" width=600>
+	<img src="Images/I24.png" width=800>
 
 6. Once you are done, exit the netcat program with ```Ctl+C``` to signal and kill the process.
 
