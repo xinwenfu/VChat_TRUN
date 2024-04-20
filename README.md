@@ -54,7 +54,7 @@ We want to understand the VChat. The most important inforamtion is the IP addres
    * This scan will also attempt to determine the version of the applications, this means when it encounters a non-standard application such as *VChat* it can take 30 seconds to 1.5 minuets depending on the speed of the systems involved to finish scanning. You may find the scan ```nmap <IP>``` without any flags to be quicker!
    * Example results are shown below:
 
-		![Alt text](Images/Nmap.png)
+![Alt text](Images/Nmap.png)
 
 3. **Linux**: As we can see the port ```9999``` is open, we can try accessing it using **Telnet** to send unencrypted communications.
 	```
@@ -84,37 +84,38 @@ Therefore, we want to know how many padding bytes are needed.
 #### Launch VChat
 1. Open Immunity Debugger
 
-	<img src="Images/I1.png" width=800> 
+<img src="Images/I1.png" width=800> 
 
     * Note that you may need to launch it as the *Administrator* this is done by right-clicking the icon found in the Windows search bar or on the desktop as shown below:
 			
-	<img src="Images/I1b.png" width = 200>
+<img src="Images/I1b.png" width = 200>
 
 2. Attach VChat: There are two options! Please use the second option.
    1. (Optional) When the VChat is already Running 
         1. Click File -> Attach
 
-			<img src="Images/I2a.png" width=200>
+<img src="Images/I2a.png" width=200>
 
 		2. Select VChat 
 
-			<img src="Images/I2b.png" width=500>
+<img src="Images/I2b.png" width=500>
 
    2. When VChat is not already Running -- This is the most reliable option!
         1. Click File -> Open, Navigate to VChat
 
-			<img src="Images/I3-1.png" width=800>
+<img src="Images/I3-1.png" width=800>
 
         2. Click "Debug -> Run"
 
-			<img src="Images/I3-2.png" width=800>
+<img src="Images/I3-2.png" width=800>
 
         3. Notice that a Terminal was opened when you clicked "Open" now you should see the program output
 
-			<img src="Images/I3-3.png" width=800>
+<img src="Images/I3-3.png" width=800>
+
 3. Ensure that the execution is not paused, click the red arrow (Top Left)
 	
-	<img src="Images/I3-4.png" width=800>
+<img src="Images/I3-4.png" width=800>
 
 
 #### Fuzzing
@@ -153,28 +154,28 @@ SPIKE is a C based fuzzing tool that is commonly used by professionals, it is av
 
 6. Observe the results of the fuzzing on VChat's terminal output.
 
-	<img src="Images/I4.png" width=600>
+<img src="Images/I4.png" width=600>
 
 	* Notice that VChat appears to have crashed after our second message! We can see that the SPIKE script continues to run for ~190 more iterations before it fails to connect to the VChat's TCP socket, however this is long after the server started to fail connections.
 
 7. We can also look at the comparison of the Register values before and after the fuzzing in Immunity Debugger to confirm a crash occurred. 
 	* Before:
 
-		<img src="Images/I7.png" width=512>
+<img src="Images/I7.png" width=512>
 
 	* After:
 
-		<img src="Images/I8.png" width=512>
+<img src="Images/I8.png" width=512>
 
       * The best way to reproduce this is to use [exploit0.py](./SourceCode/exploit0.py).
 
 8. We can examine the messages SPIKE is sending by examining the [tcpdump](https://www.tcpdump.org/) or [wireshark](https://www.wireshark.org/docs/wsug_html/) output.
 
-	<img src="Images/I5.png" width=800>
+<img src="Images/I5.png" width=800>
 
 	* After capturing the packets, right-click a TCP stream and click follow! This allows us to see all of the output. Otherwise, we would see a fragmented series of packets for larger messages
 
-		<img src="Images/I6.png" width=400>
+<img src="Images/I6.png" width=400>
 
 #### Further Analysis
 1. Generate a Cyclic Pattern. We do this so we can tell *where exactly* the return address is located on the stack. We can use the *Metasploit* program [pattern_create.rb](https://github.com/rapid7/metasploit-framework/blob/master/tools/exploit/pattern_create.rb) to generate this string. By analyzing the values stored in the register which will be a subset of the generated string after a crash, we can tell where in memory the return address is stored. 
@@ -185,7 +186,7 @@ SPIKE is a C based fuzzing tool that is commonly used by professionals, it is av
 
 2. Modify your exploit code to reflect the [exploit1.py](./SourceCode/exploit1.py) script and run it to inject a cyclic pattern into the Vulnserver program's stack and observe the EIP register. 
 
-	<img src="Images/I9.png" width=600>
+<img src="Images/I9.png" width=600>
 
 3. Notice that the EIP register reads `386F4337` in this case, we can use the [pattern_offset.rb](https://github.com/rapid7/metasploit-framework/blob/master/tools/exploit/pattern_offset.rb) script to determine the return address's offset based on our search string's position in the pattern we sent to VChat. 
 	```bash
@@ -193,11 +194,11 @@ SPIKE is a C based fuzzing tool that is commonly used by professionals, it is av
 	```
 	* This will return an offset as shown below 
 
-	<img src="Images/I10.png" width=600>
+<img src="Images/I10.png" width=600>
 
 5. (Optional) Use the [mona.py](https://github.com/corelan/mona) python program within Immunity Debugger to determine useful information about our target process. While the *cyclic pattern* from [exploit1.py](./SourceCode/exploit1.py) is in memory we can run the command ```!mona findmsp``` in the command line at the bottom of the Immunity Debugger GUI. **Note:** We must have sent the cyclic pattern and it must be present in the stack frame at the time we run this command!
 
-	<img src="Images/I12.png" width=600>
+<img src="Images/I12.png" width=600>
 
       * We can see that the offset (Discovered with [pattern_offset.rb](https://github.com/rapid7/metasploit-framework/blob/master/tools/exploit/pattern_offset.rb) earlier) is at the byte offset of `2003`, the ESP has `984` bytes after jumping to the address in the ESP register, and the EBP is at the byte offset `1999`.
       * The most important thing we learned is that we have `984` bytes to work with! This is because the malcious message is truncated by VChat
@@ -206,7 +207,7 @@ SPIKE is a C based fuzzing tool that is commonly used by professionals, it is av
 4. Now modify the exploit program to reflect the code in the [exploit2.py](./SourceCode/exploit2.py) script and run the exploit against VChat.
    * We do this to validate that we have the correct offset for the return address! 
 
-		<img src="Images/I11.png" width=600>
+<img src="Images/I11.png" width=600>
 
 		* See that the EIP is a series of the value `0x42` this is a series of Bs. This tells us that we can write an address to that location in order to change the control flow of the target program.
 		* *Note:* It took a few runs for this to work and update on Immunity Debugger within the VirtualBox VM.
@@ -233,24 +234,24 @@ We can see there are nine possible `jmp esp` instructions in the *essfunc* dll t
 8. Modify your exploit program to reflect the [exploit3.py](./SourceCode/exploit3.py) script, we use this to verify that the `jmp esp` address we inject works.
    1. Click on the black button highlighted below, and enter in the address we decided in the previous step.
 
-		<img src="Images/I16.png" width=600>
+<img src="Images/I16.png" width=600>
 
    2. Set a breakpoint at the desired address (right-click).
 
-		<img src="Images/I17.png" width=600>
+<img src="Images/I17.png" width=600>
 
    3. Run the [exploit3.py](./SourceCode/exploit3.py) program till an overflow occurs (See EIP/ESP and stack changes and the message at the bottom of the screen).
 
-		<img src="Images/I18.png" width=600>
+<img src="Images/I18.png" width=600>
 
          * Notice that the EIP now points to an essfunc.dll address!
 	4. Once the overflow occurs, click the *step into* button highlighted below.
 
-		<img src="Images/I19.png" width=600>
+<img src="Images/I19.png" width=600>
 
 	5. Notice that we jumped to the stack; we just overflowed!
 
-		<img src="Images/I20.png" width=600>
+<img src="Images/I20.png" width=600>
 
 
 Now that we have all the necessary parts for the creation of a exploit we will discuss what we have done so far (the **exploit.py** files), and how we can now expand our efforts to gain a shell in the target machine. 
@@ -291,20 +292,20 @@ Up until this point in time,  we have been performing [Denial of Service](https:
 Now we cn run VChat directly. Alternatively, we can run VChat in Immunity Debugger and examine a few things. So the follwing steps are optional.
    1. As done previously goto the `jmp esp` instruction
 		
-		<img src="Images/I21.png" width=600>
+<img src="Images/I21.png" width=720>
 
     2. Set a breakpoint and launch the exploit
 
-		<img src="Images/I22.png" width=600>
+<img src="Images/I22.png" width=720>
 
     3. Click the *Step* function a few times, it may look like we are not doing anything (Depending on your padding), however after some number of steps we should arrive at the shellcode as shown below!
 
-		<img src="Images/I23.png" width=600>
+<img src="Images/I23.png" width=720>
 
      4. Once you are satisfied we are executing the shell code, click the continue (Red arrow) button to allow it to execute.
 5. Look around in your netcat terminal! You should see a shell like the one shown below. Just note that Windows defender may kill it if you have protections enabled!
 
-	<img src="Images/I24.png" width=600>
+<img src="Images/I24.png" width=720>
 
 6. Once you are done, exit the netcat program with ```Ctl+C``` to signal and kill the process.
 
