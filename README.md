@@ -96,7 +96,7 @@ Therefore, we want to know how many padding bytes are needed.
 
 <img src="Images/I2a.png" width=200>
 
-		2. Select VChat 
+	2. Select VChat 
 
 <img src="Images/I2b.png" width=500>
 
