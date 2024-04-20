@@ -160,11 +160,11 @@ SPIKE is a C based fuzzing tool that is commonly used by professionals, it is av
 7. We can also look at the comparison of the Register values before and after the fuzzing in Immunity Debugger to confirm a crash occurred. 
 	* Before:
 
-		<img src="Images/I7.png" width=600>
+		<img src="Images/I7.png" width=512>
 
 	* After:
 
-		<img src="Images/I8.png" width=600>
+		<img src="Images/I8.png" width=512>
 
       * The best way to reproduce this is to use [exploit0.py](./SourceCode/exploit0.py).
 
