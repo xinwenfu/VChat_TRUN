@@ -94,7 +94,7 @@ Therefore, we want to know how many padding bytes are needed.
    1. (Optional) When the VChat is already Running 
         1. Click File -> Attach
 
-           <img src="Images/I2a.png" width=200>
+		<img src="Images/I2a.png" width=200>
 
 	2. Select VChat 
 
