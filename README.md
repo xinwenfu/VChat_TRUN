@@ -71,9 +71,9 @@ We want to understand the VChat. The most important inforamtion is the IP addres
   
 4. **Linux**: We can try a few inputs to the *TRUN* command, and see if we can get any information. Simply type *TRUN* followed by some additional input as shown below
 
-	<img src="Images/Telnet2.png" width=480>
+   <img src="Images/Telnet2.png" width=480>
 
-	* Now, trying every possible combinations of strings would get quite tiresome, so we can use the technique of *fuzzing* to automate this process as discussed later in the exploitation section.
+   * Now, trying every possible combinations of strings would get quite tiresome, so we can use the technique of *fuzzing* to automate this process as discussed later in the exploitation section.
 
 ### Dynamic Analysis 
 This phase of exploitation is where we launch the target application's binary or script and examine its behavior at runtime based on the input we provide.
