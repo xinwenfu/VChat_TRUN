@@ -292,20 +292,20 @@ Up until this point in time,  we have been performing [Denial of Service](https:
 Now we cn run VChat directly. Alternatively, we can run VChat in Immunity Debugger and examine a few things. So the follwing steps are optional.
    1. As done previously goto the `jmp esp` instruction
 		
-<img src="Images/I21.png" width=720>
+<img src="Images/I21.png" width=800>
 
     2. Set a breakpoint and launch the exploit
 
-<img src="Images/I22.png" width=720>
+<img src="Images/I22.png" width=800>
 
     3. Click the *Step* function a few times, it may look like we are not doing anything (Depending on your padding), however after some number of steps we should arrive at the shellcode as shown below!
 
-<img src="Images/I23.png" width=720>
+<img src="Images/I23.png" width=800>
 
      4. Once you are satisfied we are executing the shell code, click the continue (Red arrow) button to allow it to execute.
 5. Look around in your netcat terminal! You should see a shell like the one shown below. Just note that Windows defender may kill it if you have protections enabled!
 
-<img src="Images/I24.png" width=720>
+<img src="Images/I24.png" width=800>
 
 6. Once you are done, exit the netcat program with ```Ctl+C``` to signal and kill the process.
 
