@@ -214,20 +214,20 @@ SPIKE is a C based fuzzing tool that is commonly used by professionals, it is av
 
 6. Open the `Executable Modules` window from the **views** tab in Immunity Debugger. This allows us to see the memory offsets of each dependency VChat uses. This will help inform us as to which `jmp esp` instruction we should pick, since we want to avoid any *Windows dynamic libraries* since their base addresses may vary between executions and Windows systems. 
 
-	<img src="Images/I13.png" width=600>
+	<img src="Images/I13.png" width=800>
 
 7. Use the command `!mona jmp -r esp -cp nonull -o` in the Immunity Debugger's GUI command line to find some `jmp esp` instructions.
 
 	The address of a `jmp esp` instruction will be used to overwrite the return address of the victim function so that when the victim funciton returns, `jmp esp` gets running. When `jmp esp` runs, it jumps to the location referred to by esp (stack top), whhere the shellcode will be put.
 
-	<img src="Images/I14.png" width=600>
+	<img src="Images/I14.png" width=800>
 
 	- The `-r esp` flag tells *mona.py* to search for the `jmp esp` instruction.
 	- The `-cp nonull` flag tells *mona.py* to ignore null values.
 	- The `-o` flag tells *mona.py* to ignore OS modules.
 	- We can select any output from this. 
 
-	<img src="Images/I15.png" width=600>
+	<img src="Images/I15.png" width=800>
 
 	We can see there are nine possible `jmp esp` instructions in the *essfunc* dll that we can use, any should work. We will use the last one, `0x6250151e`
 
