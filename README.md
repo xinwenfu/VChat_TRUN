@@ -67,8 +67,8 @@ We want to understand the VChat. The most important inforamtion is the IP addres
    * Exit with ```CTL+]```.
    * An example is shown below:
 
-		![Alt text](Images/Telnet.png)
-
+		<img src="Images/Telnet.png" width=320>
+  
 4. **Linux**: We can try a few inputs to the *TRUN* command, and see if we can get any information. Simply type *TRUN* followed by some additional input as shown below
 
 	![Telnet](Images/Telnet2.png)
