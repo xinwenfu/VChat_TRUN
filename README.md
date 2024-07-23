@@ -6,20 +6,30 @@
 - Don't copy the *$* sign when copying and pasting a command in this tutorial
   
 ____
-This  exploit is an example of the classic **buffer overflow**. This is a scenario where an attacker sends a carefully (or not so carefully) crafted packet to a remote server. This packet, through the use of insecure functions on the remote server to process the data it contains, allows the attacker to arbitrarily write to the program's stack or heap memory spaces. This is done by **overflowing** a variable (array's) allocated space on the stack or heap performing [out of bound writes](https://cwe.mitre.org/data/definitions/787.html). It is also possible to perform [out of bound reads](https://cwe.mitre.org/data/definitions/125.html) known as a *buffer overread* however, they are not utilized in this exploit as this attack involves writing to the stack, rather than reading from it. 
+This  exploit is an example of the classic **buffer overflow**. This is a scenario where an attacker sends a carefully (or not so carefully) crafted packet to a remote server. This packet, through the use of insecure functions on the remote server to process the data it contains, allows the attacker to arbitrarily write to the program's stack or heap memory spaces. This is done by **overflowing** a variable (array's) allocated space on the stack or heap performing [out of bound writes](https://cwe.mitre.org/data/definitions/787.html). It is also possible to perform [out of bound reads](https://cwe.mitre.org/data/definitions/125.html) known as a *buffer over-read* however, they are not utilized in this exploit as this attack involves writing to the stack, rather than reading from it. 
 
 This is possible in languages like C and C++ as they **do not implement** memory safety guarantees automatically. That is we can arbitrarily write to and read from the stack or heap of a program written in C or C++. The only reason this is possible is because the compiler does not include or implement code for memory safety checks during normal memory accesses. If memory safety is guaranteed, the memory accessed in a program generated from the language's compiler (or interpreter) will always refer to valid addresses allocated to an object [1]. One example of a language with memory safety guarantees (among others) is the [Rust](https://doc.rust-lang.org/book/) programming language.
 
 
 We will be exploiting a customized and modified Vulnerable By Design (VbD) server known as [VChat](https://github.com/xinwenfu/vchat), this is a modified version of the VbD program [Vulnserver](https://github.com/stephenbradshaw/vulnserver) that was written by [Stephen Bradshaw](http://thegreycorner.com/) in addition to [other resources](https://samsclass.info/127/proj/p18-spike.htm).
 
-**Notice**: Please set up the Windows and Linux systems as described in [SystemSetup](./SystemSetup/README.md)!
-## Exploit Process
-The following sections cover the process that should (Or may) be followed when performing this exploitation on the VChat application. It should be noted that the [**Dynamic Analysis**](#dynamic-analysis) section makes certain assumptions primarily that we have access to the binary that may not be realistic in cases where you exploit remote servers; however, the enumeration and exploitation of generic Windows, and Linux servers to get the binary from a remote server falls outside of the scope of this document.
+> [!IMPORTANT]
+> Please set up the Windows and Linux systems as described in [SystemSetup](./SystemSetup/README.md)!
 
-### Information Collecting
-We want to understand the VChat. The most important inforamtion is the IP address of the Windows VM that runs VChat and the port number that VChat runs on. 
-1. (Optional) **Windows**: Setup Vchat.
+## VChat Setup and Configuration
+This section covers the compilation process, and use of the VChat Server. We include instructions for both the original VChat code which was compiled with MinGW and GCC on Windows, and the newly modified code that can be compiled with the Visual Studio C++ compiler.
+
+### Visual Studio
+1. Open the [Visual Studio project](https://github.com/DaintyJet/vchat-fork/tree/main/Server/Visual%20Studio%20Projects/DLL/Essfun) for the *essfunc* DLL.
+2. Build the project, as this contains inline assembly the target DLL file must be compiled as a x86 DLL (32-bits).
+3. Copy the Resulting DLL from the *Debug* folder in the [Essfunc Project](https://github.com/DaintyJet/vchat-fork/tree/main/Server/Visual%20Studio%20Projects/DLL/Essfun/Debug) into the *Debug* folder in the [VChat Project](https://github.com/DaintyJet/vchat-fork/tree/main/Server/Visual%20Studio%20Projects/EXE/VChat/Debug)
+
+	<img src="Images/VS-Comp.png">
+
+4. Open the [Visual Studio project](https://github.com/DaintyJet/vchat-fork/tree/main/Server/Visual%20Studio%20Projects/EXE/VChat) for the *VChat* EXE.
+5. Build the Project, our executable will be in the *Debug* folder. You can then launch the executable!
+### Mingw/GCC
+
    1. Compile VChat and its dependencies if they have not already been compiled. This is done with mingw.
       1. Create the essfunc object File. 
 		```powershell
@@ -43,8 +53,16 @@ We want to understand the VChat. The most important inforamtion is the IP addres
          * ```vchat.c```: The source file is "vchat.c".
          * ```-o vchat.exe```: The output file will be the executable "vchat.exe".
          * ```-lws2_32 ./libessfunc.a```: Link the executable against the import library "libessfunc.a", enabling it to use the DLL "essfunc.dll".
-   2. Launch the VChat application. 
-		* Click on the Icon in File Explorer when it is in the same directory as the essfunc dll.
+
+## Exploit Process
+The following sections cover the process that should (Or may) be followed when performing this exploitation on the VChat application. It should be noted that the [**Dynamic Analysis**](#dynamic-analysis) section makes certain assumptions such as having access to the application binary that may not be realistic in cases where you are exploiting remote servers; however, the enumeration and exploitation of generic Windows, and Linux servers to get the binary from a remote server falls outside of the scope of this document.
+
+### Information Collecting
+We want to understand the VChat. The most important information is the IP address of the Windows VM that runs VChat and the port number that VChat runs on. 
+
+1. Launch the VChat application. 
+	* Click on the VChat Icon in File Explorer when it is in the same directory as the essfunc dll.
+	* You can also use the simple [VChatGUI](https://github.com/daintyjet/VChatGUI) program to launch the executable.
 2. (Optional) **Linux**: Run NMap.
 	```sh
 	# Replace the <IP> with the IP of the machine.
@@ -209,8 +227,8 @@ SPIKE is a C based fuzzing tool that is commonly used by professionals, it is av
 
 		<img src="Images/I11.png" width=600>
 
-		* See that the EIP is a series of the value `0x42` this is a series of Bs. This tells us that we can write an address to that location in order to change the control flow of the target program.
-		* *Note:* It took a few runs for this to work and update on Immunity Debugger within the VirtualBox VM.
+		* See that the EIP is a series of the value `0x42` this is a series of Bs. This tells us that we can write an address to that location in order to change the control flow of the target program. We use the character 'B' as this stands out in the stack when we are examining the program under a debugger, and this is also an address that will lead to a crashed system state immediately if we try and execute it. This way we can more easily examine the behavior of the process, and find the root cause.
+		* *Note:* It sometimes takes a few runs for this to work and update on Immunity Debugger within the VirtualBox VM.
 
 6. Open the `Executable Modules` window from the **views** tab in Immunity Debugger. This allows us to see the memory offsets of each dependency VChat uses. This will help inform us as to which `jmp esp` instruction we should pick, since we want to avoid any *Windows dynamic libraries* since their base addresses may vary between executions and Windows systems. 
 
@@ -218,7 +236,7 @@ SPIKE is a C based fuzzing tool that is commonly used by professionals, it is av
 
 7. Use the command `!mona jmp -r esp -cp nonull -o` in the Immunity Debugger's GUI command line to find some `jmp esp` instructions.
 
-	The address of a `jmp esp` instruction will be used to overwrite the return address of the victim function so that when the victim funciton returns, `jmp esp` gets running. When `jmp esp` runs, it jumps to the location referred to by esp (stack top), whhere the shellcode will be put.
+	The address of a `jmp esp` instruction will be used to overwrite the return address of the victim function so that when the victim function returns, `jmp esp` gets running. When `jmp esp` runs, it jumps to the location referred to by esp (stack top), where the shellcode will be put.
 
 	<img src="Images/I14.png" width=800>
 
@@ -257,7 +275,7 @@ SPIKE is a C based fuzzing tool that is commonly used by professionals, it is av
 Now that we have all the necessary parts for the creation of a exploit we will discuss what we have done so far (the **exploit.py** files), and how we can now expand our efforts to gain a shell in the target machine. 
 
 ### Exploitations
-Up until this point in time,  we have been performing [Denial of Service](https://attack.mitre.org/techniques/T0814/) (DoS) attacks. Since we simply overflowed the stack with what is effectively garbage address values (A series of `A`s, `B`s and `C`s) all we have done with our exploits is crash the VChat server. Now, we have all the information necessary to control the flow of VChat's execution, allowing us to inject [Shellcode](https://www.sentinelone.com/blog/malicious-input-how-hackers-use-shellcode/) and perform a more meaningful attack.
+Up until this point in time,  we have been performing [Denial of Service](https://attack.mitre.org/techniques/T0814/) (DoS) attacks. Since we simply overflowed the stack with what is effectively garbage address values (a series of `A`s, `B`s and `C`s) all we have done with our exploits is crash the VChat server. Now, we have all the information necessary to control the flow of VChat's execution, allowing us to inject [Shellcode](https://www.sentinelone.com/blog/malicious-input-how-hackers-use-shellcode/) and perform a more meaningful attack.
 
 1. We first need to generate some shell code to inject into the process. We will use the [msfvenom](https://docs.metasploit.com/docs/using-metasploit/basics/how-to-use-msfvenom.html) tool to both generate shellcode and encode it to ensure it is transmitted properly. We **must** encode the resulting shellcode so it does not contain any null bytes `0x0`, carriage returns `\r` or newlines `\n`, as their presence would prevent the shellcode from properly executing by breaking the transmission, reception or execution of the shellcode. **Note**: you may need to type the command since copy and paste may not work.
 
