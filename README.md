@@ -1,10 +1,10 @@
 # VChat TRUN Exploitation: Traditional Overflow
 
-*Notice*: 
-- The following exploit and its procedures are based on the original [Blog](https://fluidattacks.com/blog/vulnserver-trun/)
-- Disable Windows *Real-time protection* at *Virus & threat protection* -> *Virus & threat protection settings*
-- Don't copy the *$* sign when copying and pasting a command in this tutorial
-  
+
+> [!NOTE]
+> - The following exploit and its procedures are based on an original [Blog](https://fluidattacks.com/blog/vulnserver-trun/) from fluid attacks.
+> - Disable Windows *Real-time protection* at *Virus & threat protection* -> *Virus & threat protection settings*.
+> - Don't copy the *$* sign when copying and pasting a command in this tutorial.
 ____
 This  exploit is an example of the classic **buffer overflow**. This is a scenario where an attacker sends a carefully (or not so carefully) crafted packet to a remote server. This packet, through the use of insecure functions on the remote server to process the data it contains, allows the attacker to arbitrarily write to the program's stack or heap memory spaces. This is done by **overflowing** a variable (array's) allocated space on the stack or heap performing [out of bound writes](https://cwe.mitre.org/data/definitions/787.html). It is also possible to perform [out of bound reads](https://cwe.mitre.org/data/definitions/125.html) known as a *buffer over-read* however, they are not utilized in this exploit as this attack involves writing to the stack, rather than reading from it. 
 
