@@ -1,12 +1,12 @@
 # TRUN Metasploit Module
-The creation of the Metasploit module follows some of the patterns and ideas discussed in the [Making-Dos-DDoS-Metasploit-Module-Vulnserver](https://github.com/DaintyJet/Making-Dos-DDoS-Metasploit-Module-Vulnserver/tree/main/MetasploitModules) document. We will not be discussing how the metasploit module is made here, and will only cover how to install it on a Kali Linux system and how to use the Metasploit module.
+The creation of the Metasploit module follows some of the patterns and ideas discussed in the [Making-Dos-DDoS-Metasploit-Module-Vulnserver](https://github.com/DaintyJet/Making-Dos-DDoS-Metasploit-Module-Vulnserver/tree/main/MetasploitModules) document. We will not be discussing how the Metasploit module is made here, and will only cover how to install it on a Kali Linux system and how to use the Metasploit module.
 
 > [!IMPORTANT]
 > Offsets may vary. Additionally if you recompile the executables or have ASLR enabled the address of the `jmpesp` target may vary.
 
 ## Installing a Module
 
-The **first** thing that you need to do is have the [Metasploit Framework](https://github.com/rapid7/metasploit-framework) installed on your system (Generall a Kali VM). You can verify this with the following command:
+The **first** thing that you need to do is have the [Metasploit Framework](https://github.com/rapid7/metasploit-framework) installed on your system (Generally a Kali VM). You can verify this with the following command:
 
 ```sh
 $ msfconsole -v
@@ -26,7 +26,7 @@ $ sudo mousepad /usr/share/metasploit-framework/modules/exploit/windows/vchat/TR
 > You can use a text editor like `mousepad`, `vim`, `emacs`, etc. To make the new file, you can also use `cp` or `mv` to place the file into the correct directory if you have made it elsewhere.
 
 
-When we start the metasploit console with the `msfconsole` command it should load the modules in the `/usr/share/metasploit-framework/modules` directory and subdirectories. However to be safe, as the server could have already been started we can use the `reload_all` command to reload all modules.
+When we start the Metasploit console with the `msfconsole` command it should load the modules in the `/usr/share/metasploit-framework/modules` directory and subdirectories. However to be safe, as the server could have already been started we can use the `reload_all` command to reload all modules.
 
 1. Starting `msfconsole` 
 
