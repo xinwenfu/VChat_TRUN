@@ -58,7 +58,7 @@ This section covers the compilation process, and use of the VChat Server. We inc
 The following sections cover the process that should (Or may) be followed when performing this exploitation on the VChat application. It should be noted that the [**Dynamic Analysis**](#dynamic-analysis) section makes certain assumptions such as having access to the application binary that may not be realistic in cases where you are exploiting remote servers; however, the enumeration and exploitation of generic Windows, and Linux servers to get the binary from a remote server falls outside of the scope of this document.
 
 ### Information Collecting
-We want to understand the VChat. The most important information is the IP address of the Windows VM that runs VChat and the port number that VChat runs on. 
+We want to understand the VChat program and how it works in order to effectively exploit it. Before diving into the specific of how VChat behaves the most important information for us is the IP address of the Windows VM that runs VChat and the port number that VChat runs on. 
 
 1. Launch the VChat application. 
 	* Click on the VChat Icon in File Explorer when it is in the same directory as the essfunc dll.
@@ -94,10 +94,7 @@ We want to understand the VChat. The most important information is the IP addres
    * Now, trying every possible combinations of strings would get quite tiresome, so we can use the technique of *fuzzing* to automate this process as discussed later in the exploitation section.
 
 ### Dynamic Analysis 
-This phase of exploitation is where we launch the target application's binary or script and examine its behavior at runtime based on the input we provide.
-We want to construct the attack string and find how we cause VChat to crash.
-We want to construct an attack string as follows: padding-bytes|address-to-overwrite-return-address|shell-code, where | means concatenation.
-Therefore, we want to know how many padding bytes are needed.
+This phase of exploitation is where we launch the target application or binary and examine its behavior based on the input we provide. We can do this both using automated fuzzing tools and manually generated inputs. We do this to discover how we can construct a payload to modify how VChat behaves. We want to construct an attack string as follows: `padding-bytes|address-to-overwrite-return-address|shell-code`, where | means concatenation. Therefore, we need know how many bytes are needed to properly pad and align our overflow to overwrite critical sections of data. 
 
 #### Launch VChat
 1. Open Immunity Debugger
@@ -219,7 +216,7 @@ SPIKE is a C based fuzzing tool that is commonly used by professionals, it is av
 	<img src="Images/I12.png" width=600>
 
       * We can see that the offset (Discovered with [pattern_offset.rb](https://github.com/rapid7/metasploit-framework/blob/master/tools/exploit/pattern_offset.rb) earlier) is at the byte offset of `2003`, the ESP has `984` bytes after jumping to the address in the ESP register, and the EBP is at the byte offset `1999`.
-      * The most important thing we learned is that we have `984` bytes to work with! This is because the malcious message is truncated by VChat
+      * The most important thing we learned is that we have `984` bytes to work with! This is because the malicious message is truncated by VChat
 
 
 4. Now modify the exploit program to reflect the code in the [exploit2.py](./SourceCode/exploit2.py) script and run the exploit against VChat.
@@ -307,7 +304,7 @@ Up until this point in time,  we have been performing [Denial of Service](https:
   	* `p`: Set to listen on a port, in this case, port 8080.
 
 4. Run VChat directly or Examine Immunity Debugger with a Break Point during Exploit
-Now we cn run VChat directly. Alternatively, we can run VChat in Immunity Debugger and examine a few things. So the follwing steps are optional.
+Now we cn run VChat directly. Alternatively, we can run VChat in Immunity Debugger and examine a few things. So the following steps are optional.
    1. As done previously goto the `jmp esp` instruction
 
 		<img src="Images/I21.png" width=800>
@@ -327,8 +324,48 @@ Now we cn run VChat directly. Alternatively, we can run VChat in Immunity Debugg
 
 2. Once you are done, exit the netcat program with ```Ctl+C``` to signal and kill the process.
 
+## Attack Mitigation Table
+In this section we will discuss the effects a variety of defenses would have on *this specific attack* on the VChat server, specifically we will be discussing their effects on a buffer overflow that directly overwrites a return address and attempts to execute shellcode that has been written to the stack. We will make a note that these mitigations may be bypassed if the target application contains additional vulnerabilities such as a [format string vulnerability](https://owasp.org/www-community/attacks/Format_string_attack), or by using more complex exploits like [Return Oriented Programming (ROP)](https://github.com/DaintyJet/VChat_TRUN_ROP).
 
-### (Optional) VChat Code 
+First we will examine the effects individual defenses have on this exploit, and then we will examine the effects a combination of these defenses would have on the VChat exploit.
+
+The mitigations we will be using in the following examination are:
+* [Buffer Security Check (GS)](https://github.com/DaintyJet/VChat_Security_Cookies): Security Cookies are inserted on the stack to detect when critical data such as the base pointer, return address or arguments have been overflowed. Integrity is checked on function return.
+* [Data Execution Prevention (DEP)](https://github.com/DaintyJet/VChat_DEP_Intro): Uses paged memeory protection to mark all non-code (.text) sections as non-executable. This prevents shellcode on the stack or heap from being executed as an exception will be raised.
+* [Address Space Layout Randomization (ASLR)](https://github.com/DaintyJet/VChat_ASLR_Intro): This mitigation makes it harder to locate where functions and datastructures are located as their region's starting address will be randomized. This is only done when the process is loaded, and if a DLL has ASLR enabled it will only have it's addresses randomized again when it is no longer in use and has been unloaded from memory.
+* [SafeSEH](https://github.com/DaintyJet/VChat_SEH): This is a protection for the Structured Exception Handing mechanism in Windows. It validates that the exception handler we would like to execute is contained in a table generated at compile time. 
+* [SEHOP](https://github.com/DaintyJet/VChat_SEH): This is a protection for the Structured Exception Handing mechanism in Windows. It validates the integrity of the SEH chain during a runtime check.
+* [Control Flow Guard (CFG)](https://github.com/DaintyJet/VChat_CFG): This mitigation verifies that indirect calls or jumps are preformed to locations contained in a table generated at compile time. Examples of indirect calls or jumps include function pointers being used to call a function, or if you are using `C++` virtual functions would be considered indirect calls as you index a table of function pointers. 
+* [Heap Integrity Validation](https://github.com/DaintyJet/VChat_Heap_Defense): This mitigation verifies the integrity of a heap when operations are preformed on the heap itself, such as allocations or frees of heap objects.
+
+### Individual Defenses: VChat Exploit 
+|Mitigation Level|Defense: Buffer Security Check (GS)|Defense: Data Execution Prevention (DEP)|Defense: Address Space Layout Randomization (ASLR) |Defense: SafeSEH| Defense: SEHOP | Defense: Heap Integrity Validation| 
+|-|-|-|-|-|-|-|
+|No Effect| | |X |X |X | X| X|
+|Partial Mitigation| | | | | | |
+|Full Mitigation|X|X| | | | | |
+
+* `Defense: Buffer Security Check (GS)`: This mitigation strategy proves effective against stack based buffer overflows that overwrite the return address or arguments of a function. This is because the randomly generated security cookie is placed before the return address and it's integrity is validated before the return address is loaded into the `EIP` register. As the security cookie is placed before the return address in order for us to overflow the return address we would have to corrupt the security cookie allowing us to detect the overflow.
+* `Defense: Data Execution Prevention (DEP)`: This mitigation strategy proves effective against stack based buffer overflows that attempt to **directly execute** shellcode located on the stack as this would raise an exception.
+* `Defense: Address Space Layout Randomization (ASLR)`: This does not affect our exploit as we do not require the addresses of external libraries or the addresses of internal functions.
+* `Defense: SafeSEH`: This does not affect our exploit as we do not leverage Structured Exception Handling.
+* `Defense: SEHOP`: This does not affect our exploit as we do not leverage Structured Exception Handling.
+* `Defense: Heap Integrity Validation`: This does not affect our exploit as we do not leverage the Windows Heap.
+
+> [!NOTE]
+> `Defense: Buffer Security Check (GS)`: If the application improperly initializes the global security cookie, or contains additional vulnerabilities that can leak values on the stack then this mitigation strategy can be bypassed.
+>
+> `Defense: Data Execution Prevention (DEP)`: If the attacker employs a [ROP Technique](https://github.com/DaintyJet/VChat_TRUN_ROP) then this defense can by bypassed.
+ ### Combined Defenses: VChat Exploit
+|Mitigation Level|Defense: Buffer Security Check (GS)|Defense: Data Execution Prevention (DEP)|Defense: Address Layout Randomization (ASLR) |Defense: SafeSEH| Defense: SEHOP | Defense: Heap Integrity Validation| 
+|-|-|-|-|-|-|-|
+|Defense: Buffer Security Check (GS)|X|**Increased Security**: Combining two effective mitigations provides the benefits of both.|**Increased Security**: ASLR increases the randomness of the generated security cookie.|**No Increase**: The SEH feature is not exploited.|**No Increase**: The SEH feature is not exploited.|**No Increase**: The Windows Heap is not exploited.| | |
+|Defense: Data Execution Prevention (DEP)|**Increased Security**: Combining two effective mitigations provides the benefits of both.|X| **No Increase**: The randomization of addresses does not affect the protections provided by DEP.|**No Increase**: The SEH feature is not exploited.|**No Increase**: The SEH feature is not exploited.|**No Increase**: The windows Heap is not exploited.| |
+
+> [!NOTE] 
+> We omit repetitive rows that represent the non-effective mitigation strategies as their cases are already covered.
+
+## (Optional) VChat Code 
 In the function ```DWORD WINAPI ConnectionHandler(LPVOID CSocket)``` which is called for **all** connections made to  the **VChat** process. A message sent from the user (e.g. attacker) is put into a local buffer *RecvBuf*. The following code snippet from the ```ConnectionHandler``` function handles the **TRUN** command. This copies 3000 bytes from the *RecvBuf* into another buffer that has been declared *TurnBuf* if the command message contains a period. This new buffer *TurnBuf* is then passed to the function ```void Function3(char* Input)```. 
 
 <!-- Below is a code snippet from the function ```DWORD WINAPI ConnectionHandler(LPVOID CSocket)``` in the VChat source code.  -->
@@ -388,14 +425,14 @@ void Function3(char *Input) {
 <!-- ![msfvenom](Images/msfvenom.PNG) -->
 
 ## References
-[1] https://stanford-cs242.github.io/f18/lectures/05-1-rust-memory-safety.html
+[[1] Memory safety in Rust](https://stanford-cs242.github.io/f18/lectures/05-1-rust-memory-safety.html)
 
-[2] https://stackoverflow.com/questions/17601949/building-a-shared-library-using-gcc-on-linux-and-mingw-on-windows
+[[2] Building a shared library using gcc on Linux and MinGW on Windows](https://stackoverflow.com/questions/17601949/building-a-shared-library-using-gcc-on-linux-and-mingw-on-windows)
 
-[3] https://caiorss.github.io/C-Cpp-Notes/compiler-flags-options.html
+[[3] CPP/C++ Compiler Flags and Options](https://caiorss.github.io/C-Cpp-Notes/compiler-flags-options.html)
 
-[4] https://thegreycorner.com/2010/12/25/introduction-to-fuzzing-using-spike-to.html
+[[4] An Introduction to Fuzzing: Using SPIKE to find vulnerabilities in Vulnserver](https://thegreycorner.com/2010/12/25/introduction-to-fuzzing-using-spike-to.html)
 
-[5] https://samsclass.info/127/proj/p18-spike.htm
+[[5] Fuzzing with Spike](https://samsclass.info/127/proj/p18-spike.htm)
 
-[6] https://owasp.org/www-community/Fuzzing
+[[6] Fuzzing](https://owasp.org/www-community/Fuzzing)
