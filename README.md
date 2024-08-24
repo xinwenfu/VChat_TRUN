@@ -9,7 +9,7 @@
 ____
 This  exploit is an example of the classic **buffer overflow**. This is a scenario where an attacker sends a carefully (or not so carefully) crafted packet to a remote server. This packet, through the use of insecure functions on the remote server to process the data it contains, allows the attacker to arbitrarily write to the program's stack or heap memory spaces. This is done by **overflowing** a variable (array's) allocated space on the stack or heap performing [out of bound writes](https://cwe.mitre.org/data/definitions/787.html). It is also possible to perform [out of bound reads](https://cwe.mitre.org/data/definitions/125.html) known as a *buffer over-read*; however, they are not utilized in this exploit as this attack involves writing to the stack, rather than reading from it. 
 
-This is possible in languages like C and C++ as they **do not implement** memory safety guarantees automatically. That is we can arbitrarily write to and read from the stack or heap of a program written in C or C++. This is only possible because the compiler does not include or implement code for memory safety checks during normal memory accesses. If memory safety is guaranteed, the memory accessed in a program generated from the language's compiler (or interpreter) will always refer to valid addresses allocated to an object [1]. One example of a language with memory safety guarantees (among others) is the [Rust](https://doc.rust-lang.org/book/) programming language.
+This is possible in languages like C and C++ as they **do not implement** memory safety guarantees automatically. That is, we can arbitrarily write to and read from the stack or heap of a program written in C or C++. This is only possible because the compiler does not include or implement code for memory safety checks during normal memory accesses. If memory safety is guaranteed, the memory accessed in a program generated from the language's compiler (or interpreter) will always refer to valid addresses allocated to an object [1]. One example of a language with memory safety guarantees (among others) is the [Rust](https://doc.rust-lang.org/book/) programming language.
 
 
 We will be exploiting a customized and modified Vulnerable By Design (VbD) server known as [VChat](https://github.com/xinwenfu/vchat), this is a modified version of the VbD program [Vulnserver](https://github.com/stephenbradshaw/vulnserver) that was written by [Stephen Bradshaw](http://thegreycorner.com/) in addition to [other resources](https://samsclass.info/127/proj/p18-spike.htm).
@@ -18,7 +18,7 @@ We will be exploiting a customized and modified Vulnerable By Design (VbD) serve
 > Please set up the Windows and Linux systems as described in [SystemSetup](./SystemSetup/README.md)!
 
 ## VChat Setup and Configuration
-This section covers the compilation process, and use of the VChat Server. We include instructions for both the original VChat code which was compiled with MinGW and GCC on Windows, and the newly modified code that can be compiled with the Visual Studio C++ compiler.
+This section covers the compilation process and use of the VChat Server. We include instructions for both the original VChat code, which was compiled with MinGW and GCC on Windows, and the newly modified code, which can be compiled with the Visual Studio C++ compiler.
 
 ### Visual Studio
 1. Open the [Visual Studio project](https://github.com/DaintyJet/vchat-fork/tree/main/Server/Visual%20Studio%20Projects/DLL/Essfun) for the *essfunc* DLL.
@@ -42,10 +42,10 @@ This section covers the compilation process, and use of the VChat Server. We inc
 		# Create a DLL with a static (preferred) base address of 0x62500000
 		$ gcc.exe -shared -o essfunc.dll -Wl,--out-implib=libessfunc.a -Wl,--image-base=0x62500000 essfunc.o
 		```
-         * ```-shared -o essfunc.dll```: We create a DLL "essfunc.dll", these are equivalent to the [shared library](https://tldp.org/HOWTO/Program-Library-HOWTO/shared-libraries.html) in Linux. 
-         * ```-Wl,--out-implib=libessfunc.a```: We tell the linker to generate generate a import library "libessfunc".a" [2].
+         * ```-shared -o essfunc.dll```: We create a DLL "essfunc.dll"; these are equivalent to the [shared library](https://tldp.org/HOWTO/Program-Library-HOWTO/shared-libraries.html) in Linux. 
+         * ```-Wl,--out-implib=libessfunc.a```: We tell the linker to generate an import library "libessfunc.a" [2].
          * ```-Wl,--image-base=0x62500000```: We specify the [Base Address](https://learn.microsoft.com/en-us/cpp/build/reference/base-base-address?view=msvc-170) as ```0x62500000``` [3].
-         * ```essfunc.o```: We build the DLL based off of the object file "essfunc.o"
+         * ```essfunc.o```: We build the DLL based on the object file "essfunc.o"
       3. Compile the VChat application. 
 		```powershell
 		# Compile and Link VChat
@@ -59,7 +59,7 @@ This section covers the compilation process, and use of the VChat Server. We inc
 The following sections cover the process that should (Or may) be followed when performing this exploitation on the VChat application. It should be noted that the [**Dynamic Analysis**](#dynamic-analysis) section makes certain assumptions, such as having access to the application binary that may not be realistic in cases where you are exploiting remote servers; however, the enumeration and exploitation of generic Windows, and Linux servers to get the binary from a remote server falls outside of the scope of this document.
 
 ### Information Collecting
-We want to understand the VChat program and how it works in order to effectively exploit it. Before diving into the specific of how VChat behaves the most important information for us is the IP address of the Windows VM that runs VChat and the port number that VChat runs on. 
+We want to understand the VChat program and how it works in order to exploit it effectively. Before diving into the specifics of how VChat behaves, the most important information for us is the IP address of the Windows VM that runs VChat and the port number that VChat runs on. 
 
 1. **Windows** Launch the VChat application. 
 	* Click on the VChat Icon in File Explorer when it is in the same directory as the essfunc DLL.
@@ -69,7 +69,7 @@ We want to understand the VChat program and how it works in order to effectively
 	# Replace the <IP> with the IP of the machine.
 	$ nmap -A <IP>
 	```
-   * We can think of the "-A" flag as the term aggressive as it does more than the normal scans and is often easily detected.
+   * We can think of the "-A" flag as the term aggressive, as it does more than normal scans and is often easily detected.
    * This scan will also attempt to determine the version of the applications; this means when it encounters a non-standard application such as *VChat*, it can take 30 seconds to 1.5 minutes, depending on the speed of the systems involved, to finish scanning. You may find the scan ```nmap <IP>``` without any flags to be quicker!
    * Example results are shown below:
 
@@ -82,7 +82,7 @@ We want to understand the VChat program and how it works in order to effectively
 	# Example
 	# telnet 127.0.0.1 9999
 	```
-   * Once you have connected, try running the ```HELP``` command. This will give us some information regarding the available commands the server processes and the arguments they take. This provides us with a starting point for our [*fuzzing*](https://owasp.org/www-community/Fuzzing) work.
+   * Once you have connected, try running the ```HELP `` command. This will give us some information regarding the available commands the server processes and the arguments they take. It provides us with a starting point for our [*fuzzing*](https://owasp.org/www-community/Fuzzing) work.
    * Exit with ```CTL+]```.
    * An example is shown below:
 
@@ -95,7 +95,7 @@ We want to understand the VChat program and how it works in order to effectively
    * Now, trying every possible combination of strings would get quite tiresome, so we can use the technique of *fuzzing* to automate this process, as discussed later in the exploitation section.
 
 ### Dynamic Analysis 
-This phase of exploitation is where we launch the target application or binary and examine its behavior based on the input we provide. We can do this both using automated fuzzing tools and manually generated inputs. We do this to discover how we can construct a payload to modify VChat's behavior. We want to construct an attack string as follows: `padding-bytes|address-to-overwrite-return-address|shell-code`, where | means concatenation. Therefore, we need to know how many bytes are required in order to properly pad and align our overflow to overwrite critical sections of data. 
+This exploitation phase is where we launch the target application or binary and examine its behavior based on the input we provide. We can do this both using automated fuzzing tools and manually generated inputs. We do this to discover how to construct a payload to modify VChat's behavior. We want to construct an attack string as follows: `padding-bytes|address-to-overwrite-return-address|shell-code`, where | means concatenation. Therefore, we need to know how many bytes are required in order to properly pad and align our overflow to overwrite critical sections of data. 
 
 #### Launch VChat
 1. Open Immunity Debugger
@@ -135,17 +135,17 @@ This phase of exploitation is where we launch the target application or binary a
 
 
 #### Fuzzing
-SPIKE is a C based fuzzing tool that is commonly used by professionals, it is available in [kali linux](https://www.kali.org/tools/spike/). Here is [a tutorial](http://thegreycorner.com/2010/12/25/introduction-to-fuzzing-using-spike-to.html) of the SPIKE tool by vulnserver's author [Stephen Bradshaw](http://thegreycorner.com/) in addition to [other resources](https://samsclass.info/127/proj/p18-spike.htm) for guidance. The source code is still available on [GitHub](https://github.com/guilhermeferreira/spikepp/) and still maintained on [GitLab](https://gitlab.com/kalilinux/packages/spike).
+SPIKE is a C based fuzzing tool commonly used by professionals, it is available in [kali Linux](https://www.kali.org/tools/spike/). Here is [a tutorial](http://thegreycorner.com/2010/12/25/introduction-to-fuzzing-using-spike-to.html) of the SPIKE tool by vulnserver's author [Stephen Bradshaw](http://thegreycorner.com/) in addition to [other resources](https://samsclass.info/127/proj/p18-spike.htm) for guidance. The source code is still available on [GitHub](https://github.com/guilhermeferreira/spikepp/) and still maintained on [GitLab](https://gitlab.com/kalilinux/packages/spike).
 
 1. Open a terminal on the **Kali Linux Machine**
 
-2. Create a file ```TURN.spk``` with your favorite text editor. We will be using a SPIKE script and interpreter rather than writing our own C based fuzzer. We will be using the [mousepad](https://github.com/codebrainz/mousepad) text editor in this walkthrough, though any editor may be used.
+2. Create a file ```TURN.spk``` with your favorite text editor. We will use a SPIKE script and interpreter rather than writing our own C based fuzzer. We will be using the [mousepad](https://github.com/codebrainz/mousepad) text editor in this walkthrough, though any editor may be used.
 	```sh
 	$ mousepad TURN.spk
 	```
 	* If you do not have a GUI environment, an editor like [nano](https://www.nano-editor.org/), [vim](https://www.vim.org/) or [emacs](https://www.gnu.org/software/emacs/) could be used.
 
-3. Define the FUZZER's parameters, we are going to be using [SPIKE](https://www.kali.org/tools/spike/) with the ```generic_send_tcp``` interpreter for TCP based fuzzing.  
+3. Define the FUZZER's parameters. We are going to use [SPIKE](https://www.kali.org/tools/spike/) with the ``generic_send_tcp``` interpreter for TCP-based fuzzing.  
 
 	```
 	s_readline();
@@ -174,7 +174,7 @@ SPIKE is a C based fuzzing tool that is commonly used by professionals, it is av
 
 	* Notice that VChat appears to have crashed after our second message! We can see that the SPIKE script continues to run for ~190 more iterations before it fails to connect to the VChat's TCP socket, however this is long after the server started to fail connections.
 
-7. We can also look at the comparison of the Register values before and after the fuzzing in Immunity Debugger to confirm a crash occurred. 
+7. We can also compare the Register values before and after the fuzzing in Immunity Debugger to confirm that a crash occurred. 
 	* Before:
 
 		<img src="Images/I7.png" width=512>
@@ -212,7 +212,7 @@ SPIKE is a C based fuzzing tool that is commonly used by professionals, it is av
 
 	<img src="Images/I10.png" width=600>
 
-5. (Optional) Use the [mona.py](https://github.com/corelan/mona) Python program within Immunity Debugger to determine some useful information about our target process. While the *cyclic pattern* from [exploit1.py](./SourceCode/exploit1.py) is in memory we can run the command ```!mona findmsp``` in the command line at the bottom of the Immunity Debugger GUI. **Note:** We must have sent the cyclic pattern and it must be present in the stack frame at the time we run this command!
+5. (Optional) Use the [mona.py](https://github.com/corelan/mona) Python program within Immunity Debugger to determine some useful information about our target process. While the *cyclic pattern* from [exploit1.py](./SourceCode/exploit1.py) is in memory we can run the command ```!mona findmsp``` in the command line at the bottom of the Immunity Debugger GUI. **Note:** We must have sent the cyclic pattern, and it must be present in the stack frame when we run this command!
 
 	<img src="Images/I12.png" width=600>
 
@@ -225,7 +225,7 @@ SPIKE is a C based fuzzing tool that is commonly used by professionals, it is av
 
 		<img src="Images/I11.png" width=600>
 
-		* See that the EIP constains a series of the value `0x42`. This is a series of Bs. This tells us that we can write an address to that location in order to change the control flow of the target program. We use the character 'B' as this stands out in the stack when we are examining the program under a debugger, and this is also an address that will lead to a crashed system state immediately if we try to execute it. This way, we can more easily examine the behavior of the process and find the root cause.
+		* See that the EIP contains a series of the value `0x42`. This is a series of Bs. This tells us that we can write an address to that location in order to change the control flow of the target program. We use the character 'B' as this stands out in the stack when we are examining the program under a debugger, and this is also an address that will lead to a crashed system state immediately if we try to execute it. This way, we can more easily examine the behavior of the process and find the root cause.
 		* *Note:* It sometimes takes a few runs for this to work and update on Immunity Debugger within the VirtualBox VM.
 
 6. Open the `Executable Modules` window from the **views** tab in Immunity Debugger. This allows us to see the memory offsets of each dependency VChat uses. This will help inform us as to which `jmp esp` instruction we should pick, since we want to avoid any *Windows dynamic libraries* since their base addresses may vary between executions and Windows systems. 
@@ -234,7 +234,7 @@ SPIKE is a C based fuzzing tool that is commonly used by professionals, it is av
 
 7. Use the command `!mona jmp -r esp -cp nonull -o` in the Immunity Debugger's GUI command line to find some `jmp esp` instructions.
 
-	The address of a `jmp esp` instruction will be used to overwrite the return address of the victim function so that when the victim function returns, `jmp esp` gets running. When `jmp esp` runs, it jumps to the location referred to by esp (stack top), where the shellcode will be put.
+	The address of a `jmp esp` instruction will be used to overwrite the return address of the victim function so that when the victim function returns, `jmp esp` gets running. When `jmp esp` runs, it jumps to the location referred to by the `ESP` register (stack top), where the shellcode will be put.
 
 	<img src="Images/I14.png" width=800>
 
