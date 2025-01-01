@@ -7,7 +7,8 @@
 > - Don't copy the *$* sign when copying and pasting a command in this tutorial.
 > - Offsets may vary depending on what version of VChat was compiled, the version of the compiler used, and any compiler flags applied during the compilation process.
 ____
-This  exploit is an example of the classic **buffer overflow**. This is a scenario where an attacker sends a carefully (or not so carefully) crafted packet to a remote server. This packet, through the use of insecure functions on the remote server to process the data it contains, allows the attacker to arbitrarily write to the program's stack or heap memory spaces. This is done by **overflowing** a variable (array's) allocated space on the stack or heap performing [out of bound writes](https://cwe.mitre.org/data/definitions/787.html). It is also possible to perform [out of bound reads](https://cwe.mitre.org/data/definitions/125.html) known as a *buffer over-read*; however, they are not utilized in this exploit as this attack involves writing to the stack, rather than reading from it. 
+This  exploit is an example of the classic **buffer overflow**. This is a scenario where an attacker sends a carefully (or not so carefully) crafted input to a local process or remote server. This input, through the use of insecure functions in the target process or the remote server used to process the data received, allows the attacker to arbitrarily write to the program's stack or heap memory spaces. This is done by **overflowing** a variable (array's) allocated space on the stack or heap performing [out of bound writes](https://cwe.mitre.org/data/definitions/787.html). It is also possible to perform [out of bound reads](https://cwe.mitre.org/data/definitions/125.html) known as a *buffer over-read*; however, they are not utilized in this exploit as this attack involves writing to the stack, rather than reading from it.
+
 
 This is possible in languages like C and C++ as they **do not implement** memory safety guarantees automatically. That is, we can arbitrarily write to and read from the stack or heap of a program written in C or C++. This is only possible because the compiler does not include or implement code for memory safety checks during normal memory accesses. If memory safety is guaranteed, the memory accessed in a program generated from the language's compiler (or interpreter) will always refer to valid addresses allocated to an object [1]. One example of a language with memory safety guarantees (among others) is the [Rust](https://doc.rust-lang.org/book/) programming language.
 
@@ -32,21 +33,21 @@ This section covers the compilation process and use of the VChat Server. We incl
 ### Mingw/GCC
 
    1. Compile VChat and its dependencies if they have not already been compiled. This is done with mingw.
-      1. Create the essfunc object File. 
+      1. Create the essfunc object File.
 		```powershell
-		# Compile Essfunc Object file 
+		# Compile Essfunc Object file
 		$ gcc.exe -c essfunc.c
 		```
-      2. Create the [DLL](https://learn.microsoft.com/en-us/troubleshoot/windows-client/deployment/dynamic-link-library) containing functions that will be used by VChat.   
+      2. Create the [DLL](https://learn.microsoft.com/en-us/troubleshoot/windows-client/deployment/dynamic-link-library) containing functions that will be used by VChat.
 		```powershell
 		# Create a DLL with a static (preferred) base address of 0x62500000
 		$ gcc.exe -shared -o essfunc.dll -Wl,--out-implib=libessfunc.a -Wl,--image-base=0x62500000 essfunc.o
 		```
-         * ```-shared -o essfunc.dll```: We create a DLL "essfunc.dll"; these are equivalent to the [shared library](https://tldp.org/HOWTO/Program-Library-HOWTO/shared-libraries.html) in Linux. 
+         * ```-shared -o essfunc.dll```: We create a DLL "essfunc.dll"; these are equivalent to the [shared library](https://tldp.org/HOWTO/Program-Library-HOWTO/shared-libraries.html) in Linux.
          * ```-Wl,--out-implib=libessfunc.a```: We tell the linker to generate an import library "libessfunc.a" [2].
          * ```-Wl,--image-base=0x62500000```: We specify the [Base Address](https://learn.microsoft.com/en-us/cpp/build/reference/base-base-address?view=msvc-170) as ```0x62500000``` [3].
          * ```essfunc.o```: We build the DLL based on the object file "essfunc.o"
-      3. Compile the VChat application. 
+      3. Compile the VChat application.
 		```powershell
 		# Compile and Link VChat
 		$ gcc.exe vchat.c -o vchat.exe -lws2_32 ./libessfunc.a
@@ -59,9 +60,9 @@ This section covers the compilation process and use of the VChat Server. We incl
 The following sections cover the process that should (Or may) be followed when performing this exploitation on the VChat application. It should be noted that the [**Dynamic Analysis**](#dynamic-analysis) section makes certain assumptions, such as having access to the application binary that may not be realistic in cases where you are exploiting remote servers; however, the enumeration and exploitation of generic Windows, and Linux servers to get the binary from a remote server falls outside of the scope of this document.
 
 ### Information Collecting
-We want to understand the VChat program and how it works in order to exploit it effectively. Before diving into the specifics of how VChat behaves, the most important information for us is the IP address of the Windows VM that runs VChat and the port number that VChat runs on. 
+We want to understand the VChat program and how it works in order to exploit it effectively. Before diving into the specifics of how VChat behaves, the most important information for us is the IP address of the Windows VM that runs VChat and the port number that VChat runs on.
 
-1. **Windows** Launch the VChat application. 
+1. **Windows** Launch the VChat application.
 	* Click on the VChat Icon in File Explorer when it is in the same directory as the essfunc DLL.
 	* You can also use the simple [VChatGUI](https://github.com/daintyjet/VChatGUI) program to launch the executable.
 2. (Optional) **Linux**: Run NMap.
@@ -69,7 +70,7 @@ We want to understand the VChat program and how it works in order to exploit it 
 	# Replace the <IP> with the IP of the machine.
 	$ nmap -A <IP>
 	```
-   * We can think of the "-A" flag as the term aggressive, as it does more than normal scans and is often easily detected.
+   * We can think of the `-A` flag as the term aggressive, as it does more than normal scans and is often easily detected.
    * This scan will also attempt to determine the version of the applications; this means when it encounters a non-standard application such as *VChat*, it can take 30 seconds to 1.5 minutes, depending on the speed of the systems involved, to finish scanning. You may find the scan ```nmap <IP>``` without any flags to be quicker!
    * Example results are shown below:
 
@@ -87,27 +88,27 @@ We want to understand the VChat program and how it works in order to exploit it 
    * An example is shown below:
 
 		<img src="Images/Telnet.png" width=480>
-  
+
 4. **Linux**: We can try a few inputs to the *TRUN* command and see if we can get any information. Type *TRUN* followed by some additional input as shown below
 
 	<img src="Images/Telnet2.png" width=480>
 
    * Now, trying every possible combination of strings would get quite tiresome, so we can use the technique of *fuzzing* to automate this process, as discussed later in the exploitation section.
 
-### Dynamic Analysis 
-This exploitation phase is where we launch the target application or binary and examine its behavior based on the input we provide. We can do this both using automated fuzzing tools and manually generated inputs. We do this to discover how to construct a payload to modify VChat's behavior. We want to construct an attack string as follows: `padding-bytes|address-to-overwrite-return-address|shell-code`, where | means concatenation. Therefore, we need to know how many bytes are required in order to properly pad and align our overflow to overwrite critical sections of data. 
+### Dynamic Analysis
+This exploitation phase is where we launch the target application or binary and examine its behavior based on the input we provide. We can do this both using automated fuzzing tools and manually generated inputs. We do this to discover how to construct a payload that modifies VChat's behavior. We want to construct an attack string as follows: `padding-bytes|address-to-overwrite-return-address|shell-code`, where | means concatenation. Therefore, we need to know how many bytes are required in order to properly pad and align our overflow to overwrite critical sections of data.
 
 #### Launch VChat
 1. Open Immunity Debugger
 
-	<img src="Images/I1.png" width=800> 
+	<img src="Images/I1.png" width=800>
 
     * Note that you may need to launch it as the *Administrator* this is done by right-clicking the icon found in the Windows search bar or on the desktop as shown below:
 
 	<img src="Images/I1b.png" width = 200>
 
 2. Attach VChat: There are two options. Please use the second option.
-   1. (Optional) When the VChat is already Running 
+   1. (Optional) When the VChat is already Running
         1. Click File -> Attach
 
             <img src="Images/I2a.png" width=200>
@@ -137,7 +138,7 @@ This exploitation phase is where we launch the target application or binary and 
 #### Fuzzing
 SPIKE is a C based fuzzing tool commonly used by professionals, it is available in [kali Linux](https://www.kali.org/tools/spike/). Here is [a tutorial](http://thegreycorner.com/2010/12/25/introduction-to-fuzzing-using-spike-to.html) of the SPIKE tool by vulnserver's author [Stephen Bradshaw](http://thegreycorner.com/) in addition to [other resources](https://samsclass.info/127/proj/p18-spike.htm) for guidance. The source code is still available on [GitHub](https://github.com/guilhermeferreira/spikepp/) and still maintained on [GitLab](https://gitlab.com/kalilinux/packages/spike).
 
-1. Open a terminal on the **Kali Linux Machine**
+1. Open a terminal on the **Kali Linux Machine**.
 
 2. Create a file ```TURN.spk``` with your favorite text editor. We will use a SPIKE script and interpreter rather than writing our own C based fuzzer. We will be using the [mousepad](https://github.com/codebrainz/mousepad) text editor in this walkthrough, though any editor may be used.
 	```sh
@@ -145,7 +146,7 @@ SPIKE is a C based fuzzing tool commonly used by professionals, it is available 
 	```
 	* If you do not have a GUI environment, an editor like [nano](https://www.nano-editor.org/), [vim](https://www.vim.org/) or [emacs](https://www.gnu.org/software/emacs/) could be used.
 
-3. Define the FUZZER's parameters. We are going to use [SPIKE](https://www.kali.org/tools/spike/) with the ``generic_send_tcp``` interpreter for TCP-based fuzzing.  
+3. Define the FUZZER's parameters. We are going to use [SPIKE](https://www.kali.org/tools/spike/) with the `generic_send_tcp` interpreter for TCP-based fuzzing.
 
 	```
 	s_readline();
@@ -174,7 +175,7 @@ SPIKE is a C based fuzzing tool commonly used by professionals, it is available 
 
 	* Notice that VChat appears to have crashed after our second message! We can see that the SPIKE script continues to run for ~190 more iterations before it fails to connect to the VChat's TCP socket, however this is long after the server started to fail connections.
 
-7. We can also compare the Register values before and after the fuzzing in Immunity Debugger to confirm that a crash occurred. 
+7. We can also compare the Register values before and after the fuzzing in Immunity Debugger to confirm that a crash occurred.
 	* Before:
 
 		<img src="Images/I7.png" width=512>
@@ -194,21 +195,21 @@ SPIKE is a C based fuzzing tool commonly used by professionals, it is available 
 	<img src="Images/I6.png" width=400>
 
 #### Further Analysis
-1. Generate a Cyclic Pattern. We do this so we can tell *where exactly* the return address is located on the stack. We can use the *Metasploit* program [pattern_create.rb](https://github.com/rapid7/metasploit-framework/blob/master/tools/exploit/pattern_create.rb) to generate this string. By analyzing the values stored in the register which will be a subset of the generated string after a crash, we can tell where in memory the return address is stored. 
+1. Generate a Cyclic Pattern. We do this so we can tell *where exactly* the return address is located on the stack. We can use the *Metasploit* program [pattern_create.rb](https://github.com/rapid7/metasploit-framework/blob/master/tools/exploit/pattern_create.rb) to generate this string. By analyzing the values stored in the register which will be a subset of the generated string after a crash, we can tell where in memory the return address is stored.
 	```bash
 	/usr/share/metasploit-framework/tools/exploit/pattern_create.rb -l 5000
 	```
 	* This will allow us to inject and overwrite a new return address at the location our program reads the original return address from.
 
-2. Modify your exploit code to reflect the [exploit1.py](./SourceCode/exploit1.py) script and run it to inject a cyclic pattern into the Vulnserver program's stack and observe the EIP register. 
+2. Modify your exploit code to reflect the [exploit1.py](./SourceCode/exploit1.py) script and run it to inject a cyclic pattern into the Vulnserver program's stack and observe the EIP register.
 
 	<img src="Images/I9.png" width=600>
 
-3. Notice that the EIP register reads `386F4337` in this case, we can use the [pattern_offset.rb](https://github.com/rapid7/metasploit-framework/blob/master/tools/exploit/pattern_offset.rb) script to determine the return address's offset based on our search string's position in the pattern we sent to VChat. 
+3. Notice that the EIP register reads `386F4337` in this case, we can use the [pattern_offset.rb](https://github.com/rapid7/metasploit-framework/blob/master/tools/exploit/pattern_offset.rb) script to determine the return address's offset based on our search string's position in the pattern we sent to VChat.
 	```bash
 	/usr/share/metasploit-framework/tools/exploit/pattern_offset.rb -q 386F4337
 	```
-	* This will return an offset as shown below 
+	* This will return an offset as shown below
 
 	<img src="Images/I10.png" width=600>
 
@@ -221,14 +222,14 @@ SPIKE is a C based fuzzing tool commonly used by professionals, it is available 
 
 
 4. Now modify the exploit program to reflect the code in the [exploit2.py](./SourceCode/exploit2.py) script and run the exploit against VChat.
-   * We do this to validate that we have the correct offset for the return address! 
+   * We do this to validate that we have the correct offset for the return address!
 
 		<img src="Images/I11.png" width=600>
 
 		* See that the EIP contains a series of the value `0x42`. This is a series of Bs. This tells us that we can write an address to that location in order to change the control flow of the target program. We use the character 'B' as this stands out in the stack when we are examining the program under a debugger, and this is also an address that will lead to a crashed system state immediately if we try to execute it. This way, we can more easily examine the behavior of the process and find the root cause.
 		* *Note:* It sometimes takes a few runs for this to work and update on Immunity Debugger within the VirtualBox VM.
 
-6. Open the `Executable Modules` window from the **views** tab in Immunity Debugger. This allows us to see the memory offsets of each dependency VChat uses. This will help inform us as to which `jmp esp` instruction we should pick, since we want to avoid any *Windows dynamic libraries* since their base addresses may vary between executions and Windows systems. 
+6. Open the `Executable Modules` window from the **views** tab in Immunity Debugger. This allows us to see the memory offsets of each dependency VChat uses. This will help inform us as to which `jmp esp` instruction we should pick, since we want to avoid any *Windows dynamic libraries* since their base addresses may vary between executions and Windows systems.
 
 	<img src="Images/I13.png" width=800>
 
@@ -270,7 +271,7 @@ SPIKE is a C based fuzzing tool commonly used by professionals, it is available 
 		<img src="Images/I20.png" width=800>
 
 
-Now that we have all the necessary parts for the creation of a exploit we will discuss what we have done so far (the **exploit.py** files), and how we can now expand our efforts to gain a shell in the target machine. 
+Now that we have all the necessary parts for the creation of a exploit we will discuss what we have done so far (the **exploit.py** files), and how we can now expand our efforts to gain a shell in the target machine.
 
 ### Exploitation
 Up until this point in time,  we have been performing [Denial of Service](https://attack.mitre.org/techniques/T0814/) (DoS) attacks. Since we simply overflowed the stack with what is effectively garbage address values (a series of `A`s, `B`s, and `C`s), all we have done with our exploits is crash the VChat server directly or indirectly after our jump instructions lead to an invalid operation. Now, we have all the information necessary to control the flow of VChat's execution, allowing us to inject [Shellcode](https://www.sentinelone.com/blog/malicious-input-how-hackers-use-shellcode/) and perform a more meaningful attack.
@@ -295,13 +296,13 @@ Up until this point in time,  we have been performing [Denial of Service](https:
       	* `\x00\x0a\x0d`: Null char, carriage return, and newline.
 
 2. Insert this into your exploit python code as shown in [exploit4.py](./SourceCode/exploit4.py) or [exploit5.py](./SourceCode/exploit5.py). The only difference between the two is that the extra padding at the end of [exploit4.py](./SourceCode/exploit4.py)'s payload `b'C' * (5000 - 2003 - 4 - 32 - len(SHELL))` is not needed. This exploit will perform the final exploit, generating a reverse shell.
-3. Launch a [netcat](https://linux.die.net/man/1/nc) listener on our *Kali Linux* machine listening on port 8080, so we can receive the outbound connection from the target. 
+3. Launch a [netcat](https://linux.die.net/man/1/nc) listener on our *Kali Linux* machine listening on port 8080, so we can receive the outbound connection from the target.
 	```sh
 	nc -l -v -p 8080
 	```
 	* `nc`: The netcat command.
-  	* `-l`: Set netcat to listen for connections. 
-  	* `v`: Verbose output. 
+  	* `-l`: Set netcat to listen for connections.
+  	* `v`: Verbose output.
   	* `p`: Set to listen on a port, in this case, port 8080.
 
 4. Run VChat directly or Examine Immunity Debugger with a Break Point during the Exploit's execution.
@@ -334,11 +335,11 @@ The mitigations we will be using in the following examination are:
 * [Buffer Security Check (GS)](https://github.com/DaintyJet/VChat_Security_Cookies): Security Cookies are inserted on the stack to detect when critical data such as the base pointer, return address or arguments have been overflowed. Integrity is checked on function return.
 * [Data Execution Prevention (DEP)](https://github.com/DaintyJet/VChat_DEP_Intro): Uses paged memory protection to mark all non-code (.text) sections as non-executable. This prevents shellcode on the stack or heap from being executed, as an exception will be raised.
 * [Address Space Layout Randomization (ASLR)](https://github.com/DaintyJet/VChat_ASLR_Intro): This mitigation makes it harder to locate where functions and datastructures are located as their region's starting address will be randomized. This is only done when the process is loaded, and if a DLL has ASLR enabled it will only have it's addresses randomized again when it is no longer in use and has been unloaded from memory.
-* [SafeSEH](https://github.com/DaintyJet/VChat_SEH): This is a protection for the Structured Exception Handing mechanism in Windows. It validates that the exception handler we would like to execute is contained in a table generated at compile time. 
+* [SafeSEH](https://github.com/DaintyJet/VChat_SEH): This is a protection for the Structured Exception Handing mechanism in Windows. It validates that the exception handler we would like to execute is contained in a table generated at compile time.
 * [SEHOP](https://github.com/DaintyJet/VChat_SEH): This is a protection for the Structured Exception Handing mechanism in Windows. It validates the integrity of the SEH chain during a runtime check.
-* [Control Flow Guard (CFG)](https://github.com/DaintyJet/VChat_CFG): This mitigation verifies that indirect calls or jumps are performed to locations contained in a table generated at compile time. Examples of indirect calls or jumps include function pointers being used to call a function, or if you are using `C++` virtual functions, which would be considered indirect calls as you index a table of function pointers. 
+* [Control Flow Guard (CFG)](https://github.com/DaintyJet/VChat_CFG): This mitigation verifies that indirect calls or jumps are performed to locations contained in a table generated at compile time. Examples of indirect calls or jumps include function pointers being used to call a function, or if you are using `C++` virtual functions, which would be considered indirect calls as you index a table of function pointers.
 * [Heap Integrity Validation](https://github.com/DaintyJet/VChat_Heap_Defense): This mitigation verifies the integrity of a heap when operations are performed on the heap itself, such as allocations or frees of heap objects.
-### Individual Defenses: VChat Exploit 
+### Individual Defenses: VChat Exploit
 |Mitigation Level|Defense: Buffer Security Check (GS)|Defense: Data Execution Prevention (DEP)|Defense: Address Space Layout Randomization (ASLR) |Defense: SafeSEH| Defense: SEHOP | Defense: Heap Integrity Validation| Defense: Control Flow Guard (CFG)|
 |-|-|-|-|-|-|-|-|
 |No Effect| | |X |X |X | X| X| X|
@@ -362,7 +363,7 @@ The mitigations we will be using in the following examination are:
 * `Defense: SafeSEH`: This does not affect our exploit as we do not leverage Structured Exception Handling.
 * `Defense: SEHOP`: This does not affect our exploit as we do not leverage Structured Exception Handling.
 * `Defense: Heap Integrity Validation`: This does not affect our exploit as we do not leverage the Windows Heap.
-* `Defense: Control Flow Guard`: This does not affect our exploit as we do not leverage indirect calls or jumps. 
+* `Defense: Control Flow Guard`: This does not affect our exploit as we do not leverage indirect calls or jumps.
 > [!NOTE]
 > `Defense: Buffer Security Check (GS)`: If the application improperly initializes the global security cookie or contains additional vulnerabilities that can leak values on the stack, then this mitigation strategy can be bypassed.
 >
@@ -373,17 +374,17 @@ The mitigations we will be using in the following examination are:
 |Defense: Buffer Security Check (GS)|X|**Increased Security**: Combining two effective mitigations provides the benefits of both.|**Increased Security**: ASLR increases the randomness of the generated security cookie.|**No Increase**: The SEH feature is not exploited.|**No Increase**: The SEH feature is not exploited.|**No Increase**: The Windows Heap is not exploited.|**No Increase**: Indirect Calls/Jumps are not exploited.| |
 |Defense: Data Execution Prevention (DEP)|**Increased Security**: Combining two effective mitigations provides the benefits of both.|X| **Partial Increase**: The randomization of addresses does not directly affect the protections provided by DEP. However, it does make it harder to bypass the protections of DEP with ROP Chains.|**No Increase**: The SEH feature is not exploited.|**No Increase**: The SEH feature is not exploited.|**No Increase**: The windows Heap is not exploited.|**No Increase**: Indirect Calls/Jumps are not exploited. | |
 
-> [!NOTE] 
+> [!NOTE]
 > We omit repetitive rows representing the ineffective mitigation strategies as their cases are already covered.
 
-## (Optional) VChat Code 
+## (Optional) VChat Code
 In the function ```DWORD WINAPI ConnectionHandler(LPVOID CSocket)```, which is called for **all** connections made to  the **VChat** process. A message sent from the user (e.g. attacker) is put into a local buffer *RecvBuf*. The following code snippet from the ```ConnectionHandler``` function handles the **TRUN** command. This copies 3000 bytes from the *RecvBuf* into another buffer that has been declared *TurnBuf* if the command message contains a period. This new buffer *TurnBuf* is then passed to the function ```void Function3(char* Input)```. 
 
 <!-- Below is a code snippet from the function ```DWORD WINAPI ConnectionHandler(LPVOID CSocket)``` in the VChat source code.  -->
 	```c
 	// Allocate TrunBuf on the heap
 	char* TrunBuf = malloc(3000);
-	// Set TrunBuf to be all 0s 
+	// Set TrunBuf to be all 0s
 	memset(TrunBuf, 0, 3000);
 
 	// Iterate through TRUN command (Exclude "TRUN ")
@@ -394,7 +395,7 @@ In the function ```DWORD WINAPI ConnectionHandler(LPVOID CSocket)```, which is c
 			strncpy(TrunBuf, RecvBuf, 3000);
 			// Enter function 3
 			Function3(TrunBuf);
-			// Stop for loop 
+			// Stop for loop
 			break;
 		}
 	}
@@ -406,12 +407,12 @@ In the function ```DWORD WINAPI ConnectionHandler(LPVOID CSocket)```, which is c
 > This ( ```DWORD WINAPI ConnectionHandler(LPVOID CSocket)```) is not where the overflow occurs!
 
 
-In ```Function3(char* Input)```, the C [standard library function](https://man7.org/linux/man-pages/man3/strcpy.3.html) ```strcpy(char* dst, char* src)``` is used to copy the passed parameter *Input* (i.e. TurnBuf) into a local buffer Buffer2S[2000]. Unlike the C [standard library function](https://cplusplus.com/reference/cstring/strncpy/) ```strncpy(char*,char*,size_t)``` used in the ```ConnectionHandler(LPVOID CSocket)``` which copies only a specified number of characters to the destination buffer. The ```strcpy(char* dst, char* src)``` function does not perform any **bound checks** when copying data from the **source** to **destination** buffer, it will stop copying once every byte up to and including a **null terminator** (`\0`) from the **source** buffer has been copied contiguously to the **destination** buffer. This means if the **source** contains more characters than the **destination** buffer can hold, ```strcpy(char*,char*)``` will continue to copy them even past the bounds of the destination object. The location of the **destination** object being allocated on the *stack* (locally defined) or on the *heap* (dynamically defined) does affect the basic overflow concept but would modify the exploit; in this case the **destination** is created *locally* on the stack. This object being located on the stack allows us to **overflow** the bounds and **overwrite** the return address which is located on the stack. This allows us to take control of the program. 
+In ```Function3(char* Input)```, the C [standard library function](https://man7.org/linux/man-pages/man3/strcpy.3.html) ```strcpy(char* dst, char* src)``` is used to copy the passed parameter *Input* (i.e. TurnBuf) into a local buffer Buffer2S[2000]. Unlike the C [standard library function](https://cplusplus.com/reference/cstring/strncpy/) ```strncpy(char*,char*,size_t)``` used in the ```ConnectionHandler(LPVOID CSocket)``` which copies only a specified number of characters to the destination buffer. The ```strcpy(char* dst, char* src)``` function does not perform any **bound checks** when copying data from the **source** to **destination** buffer, it will stop copying once every byte up to and including a **null terminator** (`\0`) from the **source** buffer has been copied contiguously to the **destination** buffer. This means if the **source** contains more characters than the **destination** buffer can hold, ```strcpy(char*,char*)``` will continue to copy them even past the bounds of the destination object. The location of the **destination** object being allocated on the *stack* (locally defined) or on the *heap* (dynamically defined) does affect the basic overflow concept but would modify the exploit; in this case the **destination** is created *locally* on the stack. This object being located on the stack allows us to **overflow** the bounds and **overwrite** the return address which is located on the stack. This allows us to take control of the program.
 
 ```cpp
 void Function3(char *Input) {
-	// Space for 2000 characters in the destination buffer 
-	char Buffer2S[2000];	
+	// Space for 2000 characters in the destination buffer
+	char Buffer2S[2000];
 	// Copies the Input buffer (which contains up to 3000 characters) into the buffer with space for 2000 chars.
 	strcpy(Buffer2S, Input);
 }
