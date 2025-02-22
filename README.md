@@ -159,6 +159,8 @@ We use [boofuzz](https://boofuzz.readthedocs.io/en/stable/index.html) for fuzzin
 python boofuzz-vulnserver-TRUN.py
 ```
 
+3. Eventually vchat will crash. Immunity Debugger gives the string that crashes vchat. Find the string in the fuzzing log file.
+
 #### Further Analysis
 1. Generate a Cyclic Pattern. We do this so we can tell *where exactly* the return address is located on the stack. We can use the *Metasploit* program [pattern_create.rb](https://github.com/rapid7/metasploit-framework/blob/master/tools/exploit/pattern_create.rb) to generate this string. By analyzing the values stored in the register which will be a subset of the generated string after a crash, we can tell where in memory the return address is stored.
 	```bash
