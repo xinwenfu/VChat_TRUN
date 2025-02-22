@@ -139,63 +139,25 @@ This exploitation phase is where we launch the target application or binary and 
 
 
 #### Fuzzing
-SPIKE is a C based fuzzing tool commonly used by professionals, it is available in [kali Linux](https://www.kali.org/tools/spike/). Here is [a tutorial](http://thegreycorner.com/2010/12/25/introduction-to-fuzzing-using-spike-to.html) of the SPIKE tool by vulnserver's author [Stephen Bradshaw](http://thegreycorner.com/) in addition to [other resources](https://samsclass.info/127/proj/p18-spike.htm) for guidance. The source code is still available on [GitHub](https://github.com/guilhermeferreira/spikepp/) and still maintained on [GitLab](https://gitlab.com/kalilinux/packages/spike).
+We use [boofuzz](https://boofuzz.readthedocs.io/en/stable/index.html) for fuzzing.
 
 1. Open a terminal on the **Kali Linux Machine**.
+```
+┌──(kali㉿kali)-[~]
+└─$ cd ~/boofuzz
+                                                                                                                                          
+┌──(kali㉿kali)-[~/boofuzz]
+└─$ source env/bin/activate
+                                                                                                                                          
+┌──(env)─(kali㉿kali)-[~/boofuzz]
+└─$ 
+```
 
-2. Create a file ```TURN.spk``` with your favorite text editor. We will use a SPIKE script and interpreter rather than writing our own C based fuzzer. We will be using the [mousepad](https://github.com/codebrainz/mousepad) text editor in this walkthrough, though any editor may be used.
-	```sh
-	$ mousepad TURN.spk
-	```
-	* If you do not have a GUI environment, an editor like [nano](https://www.nano-editor.org/), [vim](https://www.vim.org/) or [emacs](https://www.gnu.org/software/emacs/) could be used.
+2. Run the fuzzing script [boofuzz-vulnserver-TRUN.py](SourceCode/boofuzz-vulnserver-TRUN.py)
 
-3. Define the FUZZER's parameters. We are going to use [SPIKE](https://www.kali.org/tools/spike/) with the `generic_send_tcp` interpreter for TCP-based fuzzing.
-
-	```
-	s_readline();
-	s_string("TRUN ");
-	s_string_variable("*");
-	```
-    * ```s_readline();```: Return the line from the server.
-    * ```s_string("TRUN ");```: Specifies that we start each message with the *String* **TURN**.
-    * ```s_string_variable("*");```: Specifies a String that we will mutate over, we can set it to * to say "any" as we do in this case.
-4. Use the Spike Fuzzer as shown below
-	```bash
-	$ generic_send_tcp <VChat-IP> <Port> <SPIKE-Script> <SKIPVAR> <SKIPSTR>
-
-	# Example
-	# generic_send_tcp 10.0.2.13 9999 TURN.spk 0 0
-	```
-    * ```<VChat-IP>```: Replace this with the IP of the target machine.
-	* ```<Port>```: Replace this with the target port.
-	* ```<SPIKE-Script>```: Script to run through the interpreter.
-	* ```<SKIPVAR>```: Skip to the n'th **s_string_variable**, 0 -> (S - 1) where S is the number of variable blocks.
-	* ```<SKIPSTR>```: Skip to the n'th element in the array that is **s_string_variable**, they internally are an array of strings used to fuzz the target.
-
-5. Observe the results of the fuzzing on VChat's terminal output.
-
-	<img src="Images/I4.png" width=600>
-
-	* Notice that VChat appears to have crashed after our second message! We can see that the SPIKE script continues to run for ~190 more iterations before it fails to connect to the VChat's TCP socket, however this is long after the server started to fail connections.
-
-7. We can also compare the Register values before and after the fuzzing in Immunity Debugger to confirm that a crash occurred.
-	* Before:
-
-		<img src="Images/I7.png" width=512>
-
-	* After:
-
-		<img src="Images/I8.png" width=512>
-
-      * The best way to reproduce this is to use [exploit0.py](./SourceCode/exploit0.py).
-
-8. We can examine the messages SPIKE is sending by examining the [tcpdump](https://www.tcpdump.org/) or [wireshark](https://www.wireshark.org/docs/wsug_html/) output.
-
-	<img src="Images/I5.png" width=800>
-
-	* After capturing the packets, right-click a TCP stream and click follow! This allows us to see all of the output. Otherwise, we would see a fragmented series of packets for larger messages
-
-	<img src="Images/I6.png" width=400>
+```
+python boofuzz-vulnserver-TRUN.py
+```
 
 #### Further Analysis
 1. Generate a Cyclic Pattern. We do this so we can tell *where exactly* the return address is located on the stack. We can use the *Metasploit* program [pattern_create.rb](https://github.com/rapid7/metasploit-framework/blob/master/tools/exploit/pattern_create.rb) to generate this string. By analyzing the values stored in the register which will be a subset of the generated string after a crash, we can tell where in memory the return address is stored.
