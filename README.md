@@ -32,6 +32,7 @@ This section covers the compilation process and use of the VChat Server. We incl
 
 4. Open the [Visual Studio project](https://github.com/DaintyJet/vchat-fork/tree/main/Server/Visual%20Studio%20Projects/EXE/VChat) for the *VChat* EXE.
 5. Build the Project; our executable will be in the *Debug* folder. You can then launch the executable!
+
 ### Mingw/GCC
 
    1. Compile VChat and its dependencies if they have not already been compiled. This is done with mingw.
@@ -71,6 +72,9 @@ We want to understand the VChat program and how it works in order to exploit it 
 1. **Windows** Launch the VChat application.
 	* Click on the VChat Icon in File Explorer when it is in the same directory as the essfunc DLL.
 	* You can also use the simple [VChatGUI](https://github.com/daintyjet/VChatGUI) program to launch the executable.
+
+<details>
+	
 2. (Optional) **Linux**: Run NMap.
 	```sh
 	# Replace the <IP> with the IP of the machine.
@@ -81,6 +85,7 @@ We want to understand the VChat program and how it works in order to exploit it 
    * Example results are shown below:
 
 		<img src="Images/Nmap.png" width=480>
+</details>
 
 3. **Linux**: As we can see the port ```9999``` is open, we can try accessing it using **Telnet** to send unencrypted communications.
 	```
