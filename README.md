@@ -18,6 +18,7 @@ We will be exploiting a customized and modified Vulnerable By Design (VbD) serve
 > [!IMPORTANT]
 > Please set up the Windows and Linux systems as described in [SystemSetup](./SystemSetup/README.md)!
 
+<details>
 ## (Optional) VChat Setup and Configuration
 This section covers the compilation process and use of the VChat Server. We include instructions for both the original VChat code, which was compiled with MinGW and GCC on Windows, and the newly modified code, which can be compiled with the Visual Studio C++ compiler.
 
@@ -55,6 +56,7 @@ This section covers the compilation process and use of the VChat Server. We incl
          * ```vchat.c```: The source file is "vchat.c".
          * ```-o vchat.exe```: The output file will be the executable "vchat.exe".
          * ```-lws2_32 ./libessfunc.a```: Link the executable against the import library "libessfunc.a", enabling it to use the DLL "essfunc.dll".
+</details>
 
 ## Exploit Process
 The following sections cover the process that should (Or may) be followed when performing this exploitation on the VChat application. It should be noted that the [**Dynamic Analysis**](#dynamic-analysis) section makes certain assumptions, such as having access to the application binary that may not be realistic in cases where you are exploiting remote servers; however, the enumeration and exploitation of generic Windows, and Linux servers to get the binary from a remote server falls outside of the scope of this document.
