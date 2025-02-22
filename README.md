@@ -19,6 +19,7 @@ We will be exploiting a customized and modified Vulnerable By Design (VbD) serve
 > Please set up the Windows and Linux systems as described in [SystemSetup](./SystemSetup/README.md)!
 
 <details>
+	
 ## (Optional) VChat Setup and Configuration
 This section covers the compilation process and use of the VChat Server. We include instructions for both the original VChat code, which was compiled with MinGW and GCC on Windows, and the newly modified code, which can be compiled with the Visual Studio C++ compiler.
 
