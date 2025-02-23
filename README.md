@@ -120,17 +120,7 @@ This exploitation phase is where we launch the target application or binary and 
 	<img src="Images/I1b.png" width = 200>
 
 2. Attach VChat: There are two options. Please use the second option.
-   <details>   
-   1. (Optional) When the VChat is already Running
-        1. Click File -> Attach
-
-            <img src="Images/I2a.png" width=200>
-
-      	2. Select VChat
-
-        	<img src="Images/I2b.png" width=500>
-   </details>
-   2. When VChat is not already Running -- This is the most reliable option!
+   1. When VChat is not already Running -- This is the most reliable option!
         1. Click File -> Open, Navigate to VChat
 
 			<img src="Images/I3-1.png" width=800>
@@ -142,7 +132,16 @@ This exploitation phase is where we launch the target application or binary and 
         3. Notice that a Terminal was opened when you clicked "Open" and you should see the program output in this terminal.
 
 			<img src="Images/I3-3.png" width=800>
+   2. (Optional) When the VChat is already Running
+    <details>   
+       1. Click File -> Attach
 
+            <img src="Images/I2a.png" width=200>
+
+      	2. Select VChat
+
+        	<img src="Images/I2b.png" width=500>
+   </details>
 4. Ensure that the execution is not paused, click the red arrow (Top Left)
 
 	<img src="Images/I3-4.png" width=800>
