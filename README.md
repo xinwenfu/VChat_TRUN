@@ -105,7 +105,7 @@ We want to understand the VChat program and how it works in order to exploit it 
 
 	<img src="Images/Telnet2.png" width=480>
 
-   * Now, trying every possible combination of strings would get quite tiresome, so we can use the technique of *fuzzing* to automate this process, as discussed later in the exploitation section.
+   * Now, trying every possible combination of strings would get quite tiresome, so we can use the technique of [*fuzzing*](#dynamic-analysis) to automate this process, as discussed later in the exploitation section.
 
 ### Dynamic Analysis
 This exploitation phase is where we launch the target application or binary and examine its behavior based on the input we provide. We can do this both using automated fuzzing tools and manually generated inputs. We do this to discover how to construct a payload that modifies VChat's behavior. We want to construct an attack string as follows: `padding-bytes|address-to-overwrite-return-address|shell-code`, where | means concatenation. Therefore, we need to know how many bytes are required in order to properly pad and align our overflow to overwrite critical sections of data.
