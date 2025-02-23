@@ -70,9 +70,9 @@ The following sections cover the process that should (Or may) be followed when p
 ### Information Collecting
 We want to understand the VChat program and how it works in order to exploit it effectively. Before diving into the specifics of how VChat behaves, the most important information for us is the IP address of the Windows VM that runs VChat and the port number that VChat runs on.
 
-1. **Windows** Launch the VChat application.
-	* Click on the VChat Icon in File Explorer when it is in the same directory as the essfunc DLL.
-	* You can also use the simple [VChatGUI](https://github.com/daintyjet/VChatGUI) program to launch the executable.
+1. **Windows** Launch the VChat application in *c:\tools\vchat* in the Windows VM.
+	* Click on *VChat.exe* in File Explorer when it is in the same directory as the essfunc DLL.
+	* You can also use the simple *VChat_GUI.exe* program to launch *VChat.exe*. This method may have a more robust server.
 
 <details>
 	
