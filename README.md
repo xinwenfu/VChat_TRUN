@@ -134,11 +134,11 @@ This exploitation phase is where we launch the target application or binary and 
 			<img src="Images/I3-3.png" width=800>
    2. (Optional) When the VChat is already Running
     <details>   
-       1. Click File -> Attach
+      1. Click File -> Attach
 
             <img src="Images/I2a.png" width=200>
 
-      	2. Select VChat
+      2. Select VChat
 
         	<img src="Images/I2b.png" width=500>
    </details>
