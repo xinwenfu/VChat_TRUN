@@ -190,7 +190,7 @@ python boofuzz-vulnserver-TRUN.py
 	```bash
 	/usr/share/metasploit-framework/tools/exploit/pattern_offset.rb -q 386F4337
 	```
-	* This will return an offset as shown below
+	* This will return an offset as shown below. Note: the offset may be different from the one shown here. vchat here was compiled with gcc under Windows 10. Different compilers generate different code even if it is the same source code. For example, we are now using Windows 11 and Visual C++. 
 
 	<img src="Images/I10.png" width=600>
 
