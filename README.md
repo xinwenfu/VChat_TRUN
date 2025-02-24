@@ -282,6 +282,7 @@ Up until this point in time,  we have been performing [Denial of Service](https:
       	* `\x00\x0a\x0d`: Null char, carriage return, and newline.
 
 2. Insert this into your exploit python code as shown in [exploit4.py](./SourceCode/exploit4.py) or [exploit5.py](./SourceCode/exploit5.py). The only difference between the two is that the extra padding at the end of [exploit4.py](./SourceCode/exploit4.py)'s payload `b'C' * (5000 - 2003 - 4 - 32 - len(SHELL))` is not needed. This exploit will perform the final exploit, generating a reverse shell.
+   
 3. Launch a [netcat](https://linux.die.net/man/1/nc) listener on our *Kali Linux* machine listening on port 8080, so we can receive the outbound connection from the target.
 	```sh
 	nc -l -v -p 8080
@@ -291,7 +292,7 @@ Up until this point in time,  we have been performing [Denial of Service](https:
   	* `v`: Verbose output.
   	* `p`: Set to listen on a port, in this case, port 8080.
 
-4. Run VChat directly or Examine Immunity Debugger with a Break Point during the Exploit's execution.
+5. Run VChat directly or Examine Immunity Debugger with a Break Point during the Exploit's execution.
 Now, we can run VChat directly. Alternatively, we can run VChat in Immunity Debugger and examine a few things. So, the following steps are optional.
    1. As done previously, goto the `jmp esp` instruction
 
