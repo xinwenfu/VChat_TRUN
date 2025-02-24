@@ -194,6 +194,11 @@ python boofuzz-vulnserver-TRUN.py
 
 	<img src="Images/I10.png" width=600>
 
+In Metasploit's pattern_offset.rb, the offset starts counting from the beginning of the input buffer (index 0).
+This means:
++ The first byte of the generated cyclic pattern is at offset 0.
++ The second byte is at offset 1.
+  
 5. (Optional) Use the [mona.py](https://github.com/corelan/mona) Python program within Immunity Debugger to determine some useful information about our target process. While the *cyclic pattern* from [exploit1.py](./SourceCode/exploit1.py) is in memory we can run the command ```!mona findmsp``` in the command line at the bottom of the Immunity Debugger GUI. **Note:** We must have sent the cyclic pattern, and it must be present in the stack frame when we run this command!
 
 	<img src="Images/I12.png" width=600>
