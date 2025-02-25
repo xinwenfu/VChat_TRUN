@@ -190,11 +190,11 @@ python boofuzz-vulnserver-TRUN.py
 	```bash
 	/usr/share/metasploit-framework/tools/exploit/pattern_offset.rb -q 386F4337
 	```
-	* This will return an offset as shown below. Note: the offset may be different from the one shown here. vchat here was compiled with gcc under Windows 10. Different compilers generate different code even if it is the same source code. For example, we are now using Windows 11 and Visual C++. 
+	* This will return an offset as shown below. **Note**: the offset may be different from the one shown here. Vchat here was compiled with *gcc* under Windows 10. Different compilers generate different code even if it is the same source code. For example, we are now using Windows 11 and Visual C++. 
 
 	<img src="Images/I10.png" width=600>
 
-In Metasploit's pattern_offset.rb, the offset starts counting from the beginning of the input buffer (index 0).
+In Metasploit's *pattern_offset.rb*, the offset starts counting from the beginning of the input buffer (index 0).
 This means:
 + The first byte of the generated cyclic pattern is at offset 0.
 + The second byte is at offset 1.
