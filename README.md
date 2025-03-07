@@ -126,11 +126,11 @@ This exploitation phase is where we launch the target application or binary and 
 
    2. Click "Debug -> Run"
 
-			<img src="Images/I3-2.png" width=800>
+      <img src="Images/I3-2.png" width=800>
 
    3. Notice that a Terminal was opened when you clicked "Open" and you should see the program output in this terminal.
 
-			<img src="Images/vchat-running.png" width=600>
+      <img src="Images/vchat-running.png" width=600>
    
 3. Ensure that the execution is not paused, click the red arrow (Top Left)
 
