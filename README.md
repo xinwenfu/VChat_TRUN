@@ -1,8 +1,5 @@
 # VChat TRUN Exploitation: Traditional Overflow
 
-[![Video demo](https://img.youtube.com/vi/_041YB0pDv0/1.jpg)](https://youtu.be/_041YB0pDv0)
-
-
 > [!NOTE]
 > - The following exploit and its procedures are based on an original [Blog](https://fluidattacks.com/blog/vulnserver-trun/) from fluid attacks.
 > - Disable Windows *Real-time protection* at *Virus & threat protection* -> *Virus & threat protection settings*.
@@ -20,6 +17,7 @@ We will be exploiting a customized and modified Vulnerable By Design (VbD) serve
 > [!IMPORTANT]
 > Please set up the Windows and Linux systems as described in [SystemSetup](./SystemSetup/README.md)!
 
+[![Video demo](https://img.youtube.com/vi/_041YB0pDv0/1.jpg)](https://youtu.be/_041YB0pDv0)
 	
 ## (Optional) VChat Setup and Configuration
 <details>
