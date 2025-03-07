@@ -185,35 +185,22 @@ python boofuzz-vchat-TRUN.py
 
 2. Modify your exploit code to reflect the [exploit1.py](./SourceCode/exploit1.py) script and run it to inject a cyclic pattern into the Vulnserver program's stack and observe the EIP register.
 
-	<img src="Images/I9.png" width=600>
+	<img src="Images/TRUN-exploit1.png" width=600>
 
 3. Notice that the EIP register reads `386F4337` in this case, we can use the [pattern_offset.rb](https://github.com/rapid7/metasploit-framework/blob/master/tools/exploit/pattern_offset.rb) script to determine the return address's offset based on our search string's position in the pattern we sent to VChat.
 	```bash
-	/usr/share/metasploit-framework/tools/exploit/pattern_offset.rb -q 386F4337
+	/usr/share/metasploit-framework/tools/exploit/pattern_offset.rb -q 43356F43
 	```
-	* This will return an offset as shown below. **Note**: the offset may be different from the one shown here. Vchat here was compiled with *gcc* under Windows 10. Different compilers generate different code even if it is the same source code. For example, we are now using Windows 11 and Visual C++. 
-
-	<img src="Images/I10.png" width=600>
+	* This will return an offset, e.e., 1995. **Note**: the offset may be different from the one shown here. Vchat here was compiled with *gcc* under Windows 11. Different compilers generate different code even if it is the same source code. For example, we are now using Windows 11 and Visual C++. 
 
 In Metasploit's *pattern_offset.rb*, the offset starts counting from the beginning of the input buffer (index 0).
 This means:
 + The first byte of the generated cyclic pattern is at offset 0.
 + The second byte is at offset 1.
   
-4. (Optional) Use the [mona.py](https://github.com/corelan/mona) Python program within Immunity Debugger to determine some useful information about our target process. While the *cyclic pattern* from [exploit1.py](./SourceCode/exploit1.py) is in memory we can run the command ```!mona findmsp``` in the command line at the bottom of the Immunity Debugger GUI. **Note:** We must have sent the cyclic pattern, and it must be present in the stack frame when we run this command!
-
-	<img src="Images/I12.png" width=600>
-
-      * We can see that the offset (Discovered with [pattern_offset.rb](https://github.com/rapid7/metasploit-framework/blob/master/tools/exploit/pattern_offset.rb) earlier) is at the byte offset of `2003`, the ESP has `984` bytes after jumping to the address in the ESP register, and the EBP is at the byte offset `1999`.
-      * The most important thing we learned is that we have `984` bytes to work with! This is because the malicious message is truncated by VChat
-
-
 4. Now modify the exploit program to reflect the code in the [exploit2.py](./SourceCode/exploit2.py) script and run the exploit against VChat.
    * We do this to validate that we have the correct offset for the return address!
-
-		<img src="Images/I11.png" width=480>
-
-		* See that the EIP contains a series of the value `0x42`. This is a series of Bs. This tells us that we can write an address to that location in order to change the control flow of the target program. We use the character 'B' as this stands out in the stack when we are examining the program under a debugger, and this is also an address that will lead to a crashed system state immediately if we try to execute it. This way, we can more easily examine the behavior of the process and find the root cause.
+   * See that the EIP contains a series of the value `0x42`, which `B`. This tells us that we can write an address to that location in order to change the control flow of the target program. We use the character 'B' as this stands out in the stack when we are examining the program under a debugger, and this is also an address that will lead to a crashed system state immediately if we try to execute it. This way, we can more easily examine the behavior of the process and find the root cause.
 		* *Note:* It sometimes takes a few runs for this to work and update on Immunity Debugger within the VirtualBox VM.
 
 6. Open the `Executable Modules` window from the **views** tab in Immunity Debugger. This allows us to see the memory offsets of each dependency VChat uses. This will help inform us as to which `jmp esp` instruction we should pick, since we want to avoid any *Windows dynamic libraries* since their base addresses may vary between executions and Windows systems.
@@ -419,7 +406,7 @@ void Function3(char *Input) {
 <!-- 
 ## Notes
 1. If the test setting described in [SystemSetup](../SystemSetup/README.md) is used, the python attacking code works directly with no need of change other than the shellcode being replaced so the correct IP is used.
-2. If the address of *jmp esp* comes from essfunc.dll as used in the example Python code, since essfunc.dll does not use ASLR there is no need of changing the address of the *jmp esp* instruction since it will not change even when Windows 10 reboots.
+2. If the address of *jmp esp* comes from essfunc.dll as used in the example Python code, since essfunc.dll does not use ASLR there is no need of changing the address of the *jmp esp* instruction since it will not change even when Windows 11 reboots.
 -->
 
 <!-- ![msfvenom](Images/msfvenom.PNG) -->
