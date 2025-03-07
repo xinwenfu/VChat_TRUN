@@ -167,12 +167,12 @@ Start a boofuzz virtual environment so that it does not interfere with other Pyh
 └─$ 
 ```
 
-2. Run the fuzzing script [boofuzz-vulnserver-TRUN.py](SourceCode/boofuzz-vulnserver-TRUN.py)
+2. Run the fuzzing script [boofuzz-vchat-TRUN.py](SourceCode/boofuzz-vchat-TRUN.py)
 
 ```
-python boofuzz-vulnserver-TRUN.py
+python boofuzz-vchat-TRUN.py
 ```
-*boofuzz-vulnserver-TRUN.py* works as follows: builds a connection to the target, creates a message template with some fixed fields and a fuzzable field that will change, and then begins to inject the random data case by case into the target. One test case refers to one random message injected into the target.
+*boofuzz-vchat-TRUN.py* works as follows: builds a connection to the target, creates a message template with some fixed fields and a fuzzable field that will change, and then begins to inject the random data case by case into the target. One test case refers to one random message injected into the target.
 
 3. Eventually vchat will crash. Immunity Debugger gives the string that crashes vchat. Find the string in the fuzzing log file.
 
