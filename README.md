@@ -1,5 +1,7 @@
 # VChat TRUN Exploitation: Traditional Overflow
 
+[![Video demo](https://img.youtube.com/vi/_041YB0pDv0/1.jpg)](https://youtu.be/_041YB0pDv0)
+
 
 > [!NOTE]
 > - The following exploit and its procedures are based on an original [Blog](https://fluidattacks.com/blog/vulnserver-trun/) from fluid attacks.
