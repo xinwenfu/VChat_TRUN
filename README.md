@@ -122,7 +122,7 @@ This exploitation phase is where we launch the target application or binary and 
 2. Run VChat. When VChat is not already Running -- This is the most reliable option!
    1. Click File -> Open, Navigate to VChat
 
-<img src="Images/I3-1.png" width=600>
+      <img src="Images/I3-1.png" width=600>
 
    2. Click "Debug -> Run"
 
