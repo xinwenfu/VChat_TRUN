@@ -156,7 +156,7 @@ python boofuzz-vchat-TRUN.py
 
 3. Eventually vchat will crash. Immunity Debugger gives the string that crashes vchat. Find the string in the fuzzing log file. I do feel it is a bit hard to identify which string actually crashes VChat. It appears even after VChat crashes, its port is still open, maybe because it takes time for the OS to clean the crashed VChat. 
 
-<img src="Images/TRUN-fuzzing.png" width=600>
+   <img src="Images/TRUN-fuzzing.png" width=600>
 
 
 #### Further Analysis
