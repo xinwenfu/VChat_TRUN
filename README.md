@@ -144,7 +144,7 @@ This exploitation phase is where we launch the target application or binary and 
 
 3. Ensure that the execution is not paused, click the red arrow (Top Left)
 
-	<img src="Images/I3-4.png" width=800>
+	<img src="Images/imm-run.png" width=600>
 
 
 #### Fuzzing
