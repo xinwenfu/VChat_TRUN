@@ -127,7 +127,7 @@ This exploitation phase is where we launch the target application or binary and 
    <img src="Images/imm-run.png" width=600>
 
 
-#### Fuzzing
+#### Step 2: Fuzzing
 We use [boofuzz](https://boofuzz.readthedocs.io/en/stable/index.html) for fuzzing, in which methodologically generated random data is injected into the target. It is hoped that the random data will cause the target to perform erratically, for example, crash. If that happens, bugs are found in the target.
 
 1. Open a terminal on the **Kali Linux Machine**.
