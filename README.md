@@ -2,7 +2,7 @@
 
 > [!NOTE]
 > - The following exploit and its procedures are based on an original [Blog](https://fluidattacks.com/blog/vulnserver-trun/) from fluid attacks.
-> - Disable Windows *Real-time protection* at *Virus & threat protection* -> *Virus & threat protection settings*.
+> - <span style="color: red">Disable Windows *Real-time protection* at *Virus & threat protection* -> *Virus & threat protection settings*.</span>
 > - Don't copy the *$* sign when copying and pasting a command in this tutorial.
 > - Offsets may vary depending on what version of VChat was compiled, the version of the compiler used, and any compiler flags applied during the compilation process.
 ____
