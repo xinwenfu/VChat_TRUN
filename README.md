@@ -14,9 +14,6 @@ This is possible in languages like C and C++ as they **do not implement** memory
 
 We will be exploiting a customized and modified Vulnerable By Design (VbD) server known as [VChat](https://github.com/xinwenfu/vchat/tree/main/Server), this is a significantly extended version of the VbD program [Vulnserver](https://github.com/stephenbradshaw/vulnserver).
 
-> [!IMPORTANT]
-> Please set up the Windows and Linux systems as described in [SystemSetup](./SystemSetup/README.md)!
-
 [![Video demo](https://img.youtube.com/vi/_041YB0pDv0/1.jpg)](https://youtu.be/_041YB0pDv0)
 	
 ## (Optional) VChat Setup and Configuration
