@@ -17,7 +17,7 @@ We will be exploiting a customized and modified Vulnerable By Design (VbD) serve
 > [!IMPORTANT]
 > Please set up the Windows and Linux systems as described in [SystemSetup](./SystemSetup/README.md)!
 
-<a href="https://youtu.be/_041YB0pDv0"><img src="https://img.youtube.com/vi/_041YB0pDv0/1.jpg"></a>
+<a href="https://youtu.be/_041YB0pDv0"><img src="https://img.youtube.com/vi/_041YB0pDv0/1.jpg" width=320></a>
 
 [![Video demo](https://img.youtube.com/vi/_041YB0pDv0/1.jpg)](https://youtu.be/_041YB0pDv0)
 	
