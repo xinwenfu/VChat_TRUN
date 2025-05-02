@@ -221,7 +221,7 @@ Now that we have all the necessary parts for the creation of a exploit we will d
 
 **Stack Layout**
 ```
-|                          |
+|                          | <- High address
 ----------------------------
 | SHELL                    |
 ----------------------------
@@ -233,7 +233,7 @@ Now that we have all the necessary parts for the creation of a exploit we will d
 ----------------------------
 | b'TRUN /.:/'             |
 ----------------------------
-|                          |
+|                          | < - Low address
 ```
 
 
