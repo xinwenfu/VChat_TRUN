@@ -227,12 +227,13 @@ Now that we have all the necessary parts for the creation of a exploit we will d
 ----------------------------
 | b'C' * 32                |
 ----------------------------
-| Addr of JMP ESP          |
+| Addr of JMP ESP          | -> Overwrite return address
 ----------------------------
 | b'A' * 1995              |
 ----------------------------
 | b'TRUN /.:/'             |
 ----------------------------
+|                          |
 ```
 
 
