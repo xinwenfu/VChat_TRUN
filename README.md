@@ -218,6 +218,24 @@ This means:
 
 Now that we have all the necessary parts for the creation of a exploit we will discuss what we have done so far (the **exploit.py** files), and how we can now expand our efforts to gain a shell in the target machine.
 
+
+**Stack Layout**
+```
+|                          |
+----------------------------
+| SHELL                    |
+----------------------------
+| b'C' * 32                |
+----------------------------
+| Addr of JMP ESP          |
+----------------------------
+| b'A' * 1995              |
+----------------------------
+| b'TRUN /.:/'             |
+----------------------------
+```
+
+
 ### Step 3: Exploitation
 Up until this point in time,  we have been performing [Denial of Service](https://attack.mitre.org/techniques/T0814/) (DoS) attacks. Since we simply overflowed the stack with what is effectively garbage address values (a series of `A`s, `B`s, and `C`s), all we have done with our exploits is crash the VChat server directly or indirectly after our jump instructions lead to an invalid operation. Now, we have all the information necessary to control the flow of VChat's execution, allowing us to inject [Shellcode](https://www.sentinelone.com/blog/malicious-input-how-hackers-use-shellcode/) and perform a more meaningful attack.
 
