@@ -16,7 +16,7 @@ $ msfconsole -v
 > The Metasploit Framework in most cases will be installed by default on a Kali Linux or any other penetration testing platform you have chosen.
 
 
-Once you have the *Metasploit Framework* you can now **download or write** the Metasploit module. As this is an [Exploit Module](https://docs.metasploit.com/docs/modules.html#exploit-modules-2437) since it includes a *payload* and preform the exploitation of a target system/process we need to place the Ruby program into the `/usr/share/metasploit-framework/modules/exploit/`. Further since this is a Windows exploit we can place it in the `/usr/share/metasploit-framework/modules/exploit/windows` directory, within that I made a `vchat` directory to further organize the exploits.
+Once you have the *Metasploit Framework* you can now **download or write** the Metasploit module. As this is an [Exploit Module](https://docs.metasploit.com/docs/modules.html#exploit-modules-2437) since it includes a *payload* and preform the exploitation of a target system/process we need to place the Ruby program into the `/usr/share/metasploit-framework/modules/exploits/`. Further since this is a Windows exploit we can place it in the `/usr/share/metasploit-framework/modules/exploits/windows` directory, within that I made a `vchat` directory to further organize the exploits.
 
 ```sh
 $ sudo mousepad /usr/share/metasploit-framework/modules/exploit/windows/vchat/TRUN.rb
