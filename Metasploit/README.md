@@ -6,7 +6,8 @@ The creation of the Metasploit module follows some of the patterns and ideas dis
 
 ## Installing a Module
 
-The **first** thing that you need to do is have the [Metasploit Framework](https://github.com/rapid7/metasploit-framework) installed on your system (Generall a Kali VM). You can verify this with the following command:
+### Optional Installation of Metasploit Framework
+We are using Kali, installed with Metasploit Framework. So this step is optional. Otherwise, the **first** thing that you need to do is have the [Metasploit Framework](https://github.com/rapid7/metasploit-framework) installed on your system (Generall a Kali VM). You can verify this with the following command:
 
 ```sh
 $ msfconsole -v
@@ -15,17 +16,21 @@ $ msfconsole -v
 > [!NOTE]
 > The Metasploit Framework in most cases will be installed by default on a Kali Linux or any other penetration testing platform you have chosen.
 
+### Adding VChat TRUN Attack Module
+Once you have the *Metasploit Framework* you can now **download or write** the Metasploit module. As this is an [Exploit Module](https://docs.metasploit.com/docs/modules.html#exploit-modules-2437) since it includes a *payload* and preform the exploitation of a target system/process we need to place the Ruby program into the `/usr/share/metasploit-framework/modules/exploits/`. 
 
-Once you have the *Metasploit Framework* you can now **download or write** the Metasploit module. As this is an [Exploit Module](https://docs.metasploit.com/docs/modules.html#exploit-modules-2437) since it includes a *payload* and preform the exploitation of a target system/process we need to place the Ruby program into the `/usr/share/metasploit-framework/modules/exploits/`. Further since this is a Windows exploit we can place it in the `/usr/share/metasploit-framework/modules/exploits/windows` directory, within that I made a `vchat` directory to further organize the exploits.
+1. Create */usr/share/metasploit-framework/modules/exploits/windows/vchat* folder. Since this is a Windows exploit we can place it in the `/usr/share/metasploit-framework/modules/exploits/windows` directory, within that I made a `vchat` directory to further organize the exploits.
 
+2. Create TRUN.rb
 ```sh
 $ sudo mousepad /usr/share/metasploit-framework/modules/exploit/windows/vchat/TRUN.rb
 ```
+Copy and paste the content of [TRUN.rb](TRUN.rb) into this file.
 
 > [!NOTE]
 > You can use a text editor like `mousepad`, `vim`, `emacs`, etc. To make the new file, you can also use `cp` or `mv` to place the file into the correct directory if you have made it elsewhere.
 
-
+### Deploying the Attack
 When we start the metasploit console with the `msfconsole` command it should load the modules in the `/usr/share/metasploit-framework/modules` directory and subdirectories. However to be safe, as the server could have already been started we can use the `reload_all` command to reload all modules.
 
 1. Starting `msfconsole` 
