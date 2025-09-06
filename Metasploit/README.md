@@ -26,7 +26,7 @@ sudo mkdir /usr/share/metasploit-framework/modules/exploits/windows/vchat
 ```sh
 sudo mousepad /usr/share/metasploit-framework/modules/exploit/windows/vchat/TRUN.rb
 ```
-Copy and paste the content of [TRUN.rb](TRUN.rb) into this file.
+Copy and paste the content of [TRUN.rb](TRUN.rb) into this file and save.
 
 > [!NOTE]
 > You can use a text editor like `mousepad`, `vim`, `emacs`, etc. To make the new file, you can also use `cp` or `mv` to place the file into the correct directory if you have made it elsewhere.
