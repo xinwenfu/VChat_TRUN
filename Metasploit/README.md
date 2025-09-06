@@ -24,7 +24,7 @@ sudo mkdir /usr/share/metasploit-framework/modules/exploits/windows/vchat
 
 2. Create TRUN.rb
 ```sh
-sudo mousepad /usr/share/metasploit-framework/modules/exploit/windows/vchat/TRUN.rb
+sudo mousepad /usr/share/metasploit-framework/modules/exploits/windows/vchat/TRUN.rb
 ```
 Copy and paste the content of [TRUN.rb](TRUN.rb) into this file and save.
 
