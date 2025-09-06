@@ -4,8 +4,6 @@ The creation of the Metasploit module follows some of the patterns and ideas dis
 > [!IMPORTANT]
 > Offsets may vary. Additionally if you recompile the executables or have ASLR enabled the address of the `jmpesp` target may vary.
 
-## Installing a Module
-
 ### Optional Installation of Metasploit Framework
 We are using Kali, installed with Metasploit Framework. So this step is optional. Otherwise, the **first** thing that you need to do is have the [Metasploit Framework](https://github.com/rapid7/metasploit-framework) installed on your system (Generall a Kali VM). You can verify this with the following command:
 
