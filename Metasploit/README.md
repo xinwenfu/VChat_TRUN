@@ -17,11 +17,14 @@ $ msfconsole -v
 ### Adding VChat TRUN Attack Module
 Once you have the *Metasploit Framework* you can now **download or write** the Metasploit module. As this is an [Exploit Module](https://docs.metasploit.com/docs/modules.html#exploit-modules-2437) since it includes a *payload* and preform the exploitation of a target system/process we need to place the Ruby program into the `/usr/share/metasploit-framework/modules/exploits/`. 
 
-1. Create */usr/share/metasploit-framework/modules/exploits/windows/vchat* folder. Since this is a Windows exploit we can place it in the `/usr/share/metasploit-framework/modules/exploits/windows` directory, within that I made a `vchat` directory to further organize the exploits.
+1. Create */usr/share/metasploit-framework/modules/exploits/windows/vchat* folder.
+```sh
+sudo mkdir /usr/share/metasploit-framework/modules/exploits/windows/vchat
+```
 
 2. Create TRUN.rb
 ```sh
-$ sudo mousepad /usr/share/metasploit-framework/modules/exploit/windows/vchat/TRUN.rb
+sudo mousepad /usr/share/metasploit-framework/modules/exploit/windows/vchat/TRUN.rb
 ```
 Copy and paste the content of [TRUN.rb](TRUN.rb) into this file.
 
