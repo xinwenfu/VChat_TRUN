@@ -34,7 +34,7 @@ Copy and paste the content of [TRUN.rb](TRUN.rb) into this file and save.
 ### Deploying the Attack
 
 #### Deploying the Attack with Armitage
-Armitage works fine the first time it is launched, but fails to start on subsequent attempts. Create the shellscript [clean-a.sh](clean-a.sh) in Kali and run it before running Armitage.
+Armitage runs correctly the first time it is launched, but fails to start on subsequent attempts. To fix this, create the shell script [clean-a.sh](clean-a.sh) in Kali and run it before launching Armitage.
 
 #### Deploying the Attack with Metasploit Console
 
