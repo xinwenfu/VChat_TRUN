@@ -32,6 +32,12 @@ Copy and paste the content of [TRUN.rb](TRUN.rb) into this file and save.
 > You can use a text editor like `mousepad`, `vim`, `emacs`, etc. To make the new file, you can also use `cp` or `mv` to place the file into the correct directory if you have made it elsewhere.
 
 ### Deploying the Attack
+
+#### Deploying the Attack with Armitage
+Armitage works fine the first time it is launched, but fails to start on subsequent attempts. Create the shellscript [clean-a.sh](clean-a.sh) in Kali and run it before running Armitage.
+
+#### Deploying the Attack with Metasploit Console
+
 When we start the metasploit console with the `msfconsole` command it should load the modules in the `/usr/share/metasploit-framework/modules` directory and subdirectories. However to be safe, as the server could have already been started we can use the `reload_all` command to reload all modules.
 
 1. Starting `msfconsole` 
