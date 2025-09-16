@@ -15,6 +15,9 @@ $ msfconsole -v
 > The Metasploit Framework in most cases will be installed by default on a Kali Linux or any other penetration testing platform you have chosen.
 
 ### Adding VChat TRUN Attack Module
+Here is a video demo.
+[![Video demo](https://img.youtube.com/vi/ryo-rPS_dSY/mqdefault.jpg)](https://youtu.be/ryo-rPS_dSY)
+
 Once you have the *Metasploit Framework* you can now **download or write** the Metasploit module. As this is an [Exploit Module](https://docs.metasploit.com/docs/modules.html#exploit-modules-2437) since it includes a *payload* and preform the exploitation of a target system/process we need to place the Ruby program into the `/usr/share/metasploit-framework/modules/exploits/`. 
 
 1. Create */usr/share/metasploit-framework/modules/exploits/windows/vchat* folder.
